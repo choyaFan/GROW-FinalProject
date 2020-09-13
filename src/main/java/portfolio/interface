@@ -1,0 +1,67 @@
+
+1. getCash
+ input:null
+ output: Cash(name,type,value)
+ method: Get
+
+2. getInvestment
+ input:null
+ output: Portfolio(name,type,value,time)
+ method: Get
+
+3. getCashTotal()
+ input:null
+ output: total value(double)
+ method: Get
+
+4. getInvestmentTotal()
+ input:null
+ output: total value(double)
+ method: Get
+
+5. getNetWorth(start,end)
+ input: start,end: Date
+ output: List<Double>
+ method: Get
+
+6. getCash(start,end)
+ input: start,end: Date
+ output: List<Double>
+ method: Get
+
+7. getInvestment(start,end)
+ input: start,end: Date
+ output: List<Double>
+ method: Get
+
+8. getIncome(start,end)
+ input: start, end :Date
+ output: {[income:double,type:String;],total income:double}
+ method: Get
+9. getSpending(start,end)
+ input: start, end :Date
+ output: {[spending:double,type:String;],total spending:double}
+ method: Get
+
+10. getIndices(){
+ input: null
+ output:{sap500:double...}
+ method: Get
+}
+
+11. getGainers(){
+ input: null
+ output:{5*[name:percentage]}(Apple:2.53% etc.)
+ method: Get
+}
+
+12. getLosers(){
+ input: null
+ output:{5*[name:percentage]}(Apple:-2.53% etc.)
+ method: Get
+}
+
+13. getHoldings()
+ input: null
+ output: double
+ method: Get
