@@ -3,6 +3,7 @@ package portfolio;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.lang.reflect.Field;
 import java.text.ParseException;
@@ -45,16 +46,16 @@ public class NetWorthServiceTest {
         day11 = sdf.parse("1/1/2020");
 
 
-        netWorthMap.put("i10001",new Investment("i10001","Diageo plc","DEO", day1,114.83,130));
-        netWorthMap.put("i10002",new Investment("i10002","Vanda","VNDA",day2,10.80,240));
-        netWorthMap.put("i10003",new Investment("i10003","NexPoint","NHF", day3,24.16,125));
-        netWorthMap.put("i10004",new Investment("i10004","Cadence","CDNS", day4,38.02,70));
-        netWorthMap.put("i10005",new Investment("i10005","Silicon","SIMO", day5,53.64,110));
-        netWorthMap.put("i10006",new Investment("i10006","Ares","ARES", day6,16.87,65));
-        netWorthMap.put("i10007",new Investment("i10007","Itau","ITCB", day7,11.45,50));
-        netWorthMap.put("i10008",new Investment("i10008","Valley","VLY", day8,9.8,200));
-        netWorthMap.put("i10009",new Investment("i10009","Echo","ECHO", day9,32.4,60));
-        netWorthMap.put("i10010",new Investment("i10010","Guggenheim","GGM", day9,21.78,80));
+        netWorthMap.put("i10001",new Investment("i10001","Diageo plc","DEO","Bond", day1,114.83,130));
+        netWorthMap.put("i10002",new Investment("i10002","Vanda","VNDA","Bond",day2,10.80,240));
+        netWorthMap.put("i10003",new Investment("i10003","NexPoint","NHF","Stock", day3,24.16,125));
+        netWorthMap.put("i10004",new Investment("i10004","Cadence","CDNS","Future", day4,38.02,70));
+        netWorthMap.put("i10005",new Investment("i10005","Silicon","SIMO","ETF", day5,53.64,110));
+        netWorthMap.put("i10006",new Investment("i10006","Ares","ARES","Future", day6,16.87,65));
+        netWorthMap.put("i10007",new Investment("i10007","Itau","ITCB","Stock", day7,11.45,50));
+        netWorthMap.put("i10008",new Investment("i10008","Valley","VLY","Stock", day8,9.8,200));
+        netWorthMap.put("i10009",new Investment("i10009","Echo","ECHO","Bond", day9,32.4,60));
+        netWorthMap.put("i10010",new Investment("i10010","Guggenheim","GGM","ETF", day9,21.78,80));
         netWorthMap.put("c1",new Cash("c1","Citi","checking",1100,day4));
         netWorthMap.put("c2",new Cash("c2","ABC","checking",500,day4));
         netWorthMap.put("c3",new Cash("c3","Citi","saving",10000,day10));
@@ -67,7 +68,7 @@ public class NetWorthServiceTest {
     }
     @Test
     public void test_getAllCash(){
-        List<Cash> cashList = service.getAllCash();
+        List<NetWorth> cashList = service.getAllCash();
         cashList.forEach(System.out::println);
     }
 
@@ -88,7 +89,7 @@ public class NetWorthServiceTest {
 
     @Test
     public void test_getAllInvestments(){
-        List<Investment> investments = service.getAllInvestments();
+        List<NetWorth> investments = service.getAllInvestments();
         investments.forEach(System.out::println);
     }
 
@@ -124,12 +125,16 @@ public class NetWorthServiceTest {
     @Test
     public void test_getIncome(){
         CashFlow cf = service.getIncome(day8,day7);
-        System.out.println(cf.getTotalValue());
+        Map<String,Double> cashMap = cf.getCashFlow();
+        cashMap.keySet().forEach(p->System.out.println(p+":"+cashMap.get(p)));
+        System.out.println("Total:" + cf.getTotalValue());
     }
 
     @Test
     public void test_getSpending(){
         CashFlow cf = service.getSpending(day8,day7);
-        System.out.println(cf.getTotalValue());
+        Map<String,Double> cashMap = cf.getCashFlow();
+        cashMap.keySet().forEach(p->System.out.println(p+":"+cashMap.get(p)));
+        System.out.println("Total:" + cf.getTotalValue());
     }
 }

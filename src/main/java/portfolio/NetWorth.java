@@ -1,6 +1,5 @@
 package portfolio;
 
-
 import java.util.Date;
 
 public abstract class NetWorth {
@@ -8,6 +7,7 @@ public abstract class NetWorth {
     String name;
     Date created;
     double value;
+    String type;
 
     public String getID() {
         return ID;
@@ -33,11 +33,19 @@ public abstract class NetWorth {
         this.created = created;
     }
 
-    public double getValue() {
+    public Double getValue() {
         return value;
     }
 
     public void setValue(double value) {
         this.value = value;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

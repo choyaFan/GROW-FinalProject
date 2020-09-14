@@ -21,7 +21,7 @@ public class PortfolioController {
     NetWorthService service;
 
     @GetMapping("/getAllCash")
-    public List<Cash> getAllCash(){
+    public List<NetWorth> getAllCash(){
         return service.getAllCash();
     }
     @GetMapping("/getCashTotalValue")
@@ -39,7 +39,7 @@ public class PortfolioController {
         }
     }
     @GetMapping("/getAllInvestments")
-    public List<Investment> getAllInvestments(){
+    public List<NetWorth> getAllInvestments(){
         return service.getAllInvestments();
     }
     @GetMapping("/getInvestmentTotalValue")
