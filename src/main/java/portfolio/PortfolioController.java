@@ -16,12 +16,11 @@ import java.util.Map;
 @CrossOrigin
 public class PortfolioController {
     private static final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-
     @Autowired
     NetWorthService service;
 
     @GetMapping("/getAllCash")
-    public List<NetWorth> getAllCash(){
+    public List<Cash> getAllCash(){
         return service.getAllCash();
     }
     @GetMapping("/getCashTotalValue")
@@ -39,7 +38,7 @@ public class PortfolioController {
         }
     }
     @GetMapping("/getAllInvestments")
-    public List<NetWorth> getAllInvestments(){
+    public List<Investment> getAllInvestments(){
         return service.getAllInvestments();
     }
     @GetMapping("/getInvestmentTotalValue")
