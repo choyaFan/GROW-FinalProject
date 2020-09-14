@@ -2,10 +2,11 @@ package portfolio;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import java.lang.reflect.Field;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,8 +14,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest(classes = Application.class)
 public class NetWorthServiceTest {
-
     private static final NetWorthService service = new NetWorthServiceImpl();
     private static final Map<String, NetWorth> netWorthMap = new HashMap<>();
     private static final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
@@ -30,9 +32,8 @@ public class NetWorthServiceTest {
     private static Date day10;
     private static Date day11;
 
-
     @BeforeAll
-    public static void init() throws ParseException, NoSuchFieldException, IllegalAccessException {
+    public static void init() throws ParseException{
         day1 = sdf.parse("5/4/2015");
         day2 = sdf.parse("7/27/2015");
         day3 = sdf.parse("3/1/2018");
@@ -44,8 +45,6 @@ public class NetWorthServiceTest {
         day9 = sdf.parse("7/26/2018");
         day10 = sdf.parse("6/1/2020");
         day11 = sdf.parse("1/1/2020");
-
-
         netWorthMap.put("i10001",new Investment("i10001","Diageo plc","DEO","Bond", day1,114.83,130));
         netWorthMap.put("i10002",new Investment("i10002","Vanda","VNDA","Bond",day2,10.80,240));
         netWorthMap.put("i10003",new Investment("i10003","NexPoint","NHF","Stock", day3,24.16,125));
@@ -60,15 +59,10 @@ public class NetWorthServiceTest {
         netWorthMap.put("c2",new Cash("c2","ABC","checking",500,day4));
         netWorthMap.put("c3",new Cash("c3","Citi","saving",10000,day10));
         netWorthMap.put("c4",new Cash("c4","AAA","saving",8888,day11));
-
-        Field field = NetWorthServiceImpl.class.getField("netWorthMap");
-        field.setAccessible(true);
-        field.set(service,netWorthMap);
-
     }
     @Test
     public void test_getAllCash(){
-        List<NetWorth> cashList = service.getAllCash();
+        List<Cash> cashList = service.getAllCash();
         cashList.forEach(System.out::println);
     }
 
@@ -89,7 +83,7 @@ public class NetWorthServiceTest {
 
     @Test
     public void test_getAllInvestments(){
-        List<NetWorth> investments = service.getAllInvestments();
+        List<Investment> investments = service.getAllInvestments();
         investments.forEach(System.out::println);
     }
 
