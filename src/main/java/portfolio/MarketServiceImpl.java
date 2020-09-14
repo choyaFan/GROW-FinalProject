@@ -25,7 +25,6 @@ public class MarketServiceImpl implements MarketService {
         indices.put("S&P 500", getChangeByName("S&P 500"));
         indices.put("NASDAQ", getChangeByName("NASDAQ"));
         indices.put("SSE Composite Index", getChangeByName("SSE Composite Index"));
-        System.out.println(indices);
         return JSON.toJSONString(indices);
     }
 
@@ -110,7 +109,12 @@ public class MarketServiceImpl implements MarketService {
             }
         }
         List<Map.Entry<String, Double>> list = new ArrayList<>(yieldMap.entrySet());
-        list.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+        list.sort((o1, o2) -> {
+            if (o1.getValue() < 0 && o2.getValue() < 0){
+                return o1.getValue().compareTo(o2.getValue());
+            }
+            return o2.getValue().compareTo(o1.getValue());
+        });
         for(Map.Entry<String, Double> map : list) {
             sortedYieldMap.put(map.getKey(), map.getValue());
         }
