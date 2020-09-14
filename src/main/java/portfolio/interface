@@ -1,4 +1,3 @@
-
 1. getCash
  input:null
  output: Cash(name,type,value)
@@ -38,6 +37,7 @@
  input: start, end :Date
  output: {[income:double,type:String;],total income:double}
  method: Get
+
 9. getSpending(start,end)
  input: start, end :Date
  output: {[spending:double,type:String;],total spending:double}

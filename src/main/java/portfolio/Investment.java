@@ -20,29 +20,20 @@ public class Investment extends NetWorth{
 
     }
 
-    private String name;
     private String symbol;
     private Date purchaseDate;
     private double purchasePrice;
     private int shares;
 
-    public Investment(String ID,String name, String symbol, Date purchaseDate, double purchasePrice, int shares) {
+    public Investment(String ID,String name, String symbol,String type, Date purchaseDate, double purchasePrice, int shares) {
         this.ID = ID;
         this.name = name;
         this.symbol = symbol;
+        this.type = type;
         this.purchaseDate = purchaseDate;
         this.purchasePrice = purchasePrice;
         this.shares = shares;
         this.created = purchaseDate;
-        this.value = getValue();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getSymbol() {
@@ -78,21 +69,18 @@ public class Investment extends NetWorth{
     }
 
     @Override
-    public double getValue(){
-        double price = prices.containsKey(name)? prices.get(name):0;
-        return price * shares;
+    public Double getValue(){
+        Double price = prices.getOrDefault(name, null);
+        return price==null?null:price * shares;
     }
 
-    public double getIncome(){
-        return (prices.get(name) - purchasePrice) * shares;
+    public Double getIncome(){
+        Double price = prices.getOrDefault(name, null);
+        return price==null? null:(price - purchasePrice) * shares;
     }
 
     public double getSpending(){
         return purchasePrice * shares;
-    }
-
-    public Portfolio generatePortfolio(){
-        return new Portfolio();
     }
 
     public String toString(){

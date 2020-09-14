@@ -3,9 +3,6 @@ package portfolio;
 import java.util.Date;
 
 public class Cash extends NetWorth{
-    private String name;
-    private String type;
-    private double value;
 
     public Cash(String ID, String name, String type, double value, Date date) {
         this.ID = ID;
@@ -31,7 +28,7 @@ public class Cash extends NetWorth{
         this.type = type;
     }
 
-    public double getValue() {
+    public Double getValue() {
         return value;
     }
 

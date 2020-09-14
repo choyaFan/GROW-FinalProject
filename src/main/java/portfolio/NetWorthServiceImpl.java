@@ -16,12 +16,11 @@ public class NetWorthServiceImpl implements NetWorthService{
     public Map<String,NetWorth> netWorthMap;
 
     @Override
-    public List<Cash> getAllCash() {
+    public List<NetWorth> getAllCash() {
         return netWorthMap.values()
                 .stream()
                 .filter(netWorth -> netWorth instanceof Cash)
-                .map(netWorth -> (Cash)netWorth)
-                .sorted(Comparator.comparing(Cash::getCreated))
+                .sorted(Comparator.comparing(NetWorth::getCreated))
                 .collect(Collectors.toList());
     }
 
@@ -44,12 +43,11 @@ public class NetWorthServiceImpl implements NetWorthService{
     }
 
     @Override
-    public List<Investment> getAllInvestments() {
+    public List<NetWorth> getAllInvestments() {
         return netWorthMap.values()
                 .stream()
                 .filter(netWorth -> netWorth instanceof Investment)
-                .map(netWorth -> (Investment)netWorth)
-                .sorted(Comparator.comparing(Investment::getCreated))
+                .sorted(Comparator.comparing(NetWorth::getCreated))
                 .collect(Collectors.toList());
     }
 
@@ -86,7 +84,7 @@ public class NetWorthServiceImpl implements NetWorthService{
                 .filter(netWorth -> netWorth instanceof Investment)
                 .filter(netWorth -> !netWorth.getCreated().after(end) && !netWorth.getCreated().before(start))
                 .map(netWorth -> (Investment) netWorth)
-                .collect(Collectors.groupingBy(Investment::getSymbol,Collectors.summingDouble(Investment::getIncome)));
+                .collect(Collectors.groupingBy(Investment::getType,Collectors.summingDouble(Investment::getIncome)));
         double totalValue = cashFlow.values().stream().mapToDouble(value -> value).sum();
         return new CashFlow(cashFlow,totalValue);
     }
@@ -98,7 +96,7 @@ public class NetWorthServiceImpl implements NetWorthService{
                 .filter(netWorth -> netWorth instanceof Investment)
                 .filter(netWorth -> !netWorth.getCreated().after(end) && !netWorth.getCreated().before(start))
                 .map(netWorth -> (Investment) netWorth)
-                .collect(Collectors.groupingBy(Investment::getSymbol,Collectors.summingDouble(Investment::getSpending)));
+                .collect(Collectors.groupingBy(Investment::getType,Collectors.summingDouble(Investment::getSpending)));
         double totalValue = cashFlow.values().stream().mapToDouble(value -> value).sum();
         return new CashFlow(cashFlow,totalValue);
     }
