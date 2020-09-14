@@ -7,4 +7,5 @@ public interface MarketService {
     public String getGainers();
     public String getLosers();
     public double getHoldings();
+    public void initData();
 }
