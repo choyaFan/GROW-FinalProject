@@ -8,9 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @CrossOrigin
@@ -27,8 +25,8 @@ public class PortfolioController {
     public double getCashTotalValue(){
         return service.getCashTotalValue();
     }
-    @GetMapping("/getCashByTime")
-    public ResponseEntity<Map<Date,Double>> getCashByTime(@RequestParam("start") String start, @RequestParam("end") String end){
+    @GetMapping(value = "/getCashByTime")
+    public ResponseEntity<List<DateValue>> getCashByTime(@RequestParam("start") String start, @RequestParam("end") String end){
         try{
             return new ResponseEntity<>(service.getCashByTime(sdf.parse(start),sdf.parse(end)), HttpStatus.OK);
         } catch (ParseException ex){
@@ -46,7 +44,7 @@ public class PortfolioController {
         return service.getInvestmentTotalValue();
     }
     @GetMapping("/getInvestmentsByTime")
-    public ResponseEntity<Map<Date,Double>> getInvestmentsByTime(@RequestParam("start") String start, @RequestParam("end") String end){
+    public ResponseEntity<List<DateValue>> getInvestmentsByTime(@RequestParam("start") String start, @RequestParam("end") String end){
         try{
             return new ResponseEntity<>(service.getInvestmentsByTime(sdf.parse(start),sdf.parse(end)), HttpStatus.OK);
         } catch (ParseException ex){
@@ -56,7 +54,7 @@ public class PortfolioController {
         }
     }
     @GetMapping("/getNetWorthByTime")
-    public ResponseEntity<Map<Date,Double>> getNetWorthByTime(@RequestParam("start") String start, @RequestParam("end") String end){
+    public ResponseEntity<List<DateValue>> getNetWorthByTime(@RequestParam("start") String start, @RequestParam("end") String end){
         try{
             return new ResponseEntity<>(service.getNetWorthByTime(sdf.parse(start),sdf.parse(end)), HttpStatus.OK);
         } catch (ParseException ex){

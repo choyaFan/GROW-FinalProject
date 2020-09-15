@@ -9,8 +9,14 @@ import java.util.stream.Collectors;
 @Component
 public class NetWorthServiceImpl implements NetWorthService{
     @Autowired
-    private NetWorthDao netWorthDao;
-    private static final List<NetWorth> netWorthList = new ArrayList<>();
+    private final NetWorthDao netWorthDao;
+    private final List<NetWorth> netWorthList = new ArrayList<>();
+
+    public NetWorthServiceImpl(NetWorthDao netWorthDao) {
+        this.netWorthDao = netWorthDao;
+        this.netWorthList.addAll(this.getAllCash());
+        this.netWorthList.addAll(this.getAllInvestments());
+    }
 
     @Override
     public List<Cash> getAllCash() {
@@ -26,11 +32,14 @@ public class NetWorthServiceImpl implements NetWorthService{
     }
 
     @Override
-    public Map<Date,Double> getCashByTime(Date start, Date end) {
-        return netWorthDao.getAllCash()
+    public List<DateValue> getCashByTime(Date start, Date end) {
+        Map<Date,Double> netWorthMap = netWorthDao.getAllCash()
                 .stream()
                 .filter(netWorth -> !netWorth.getCreated().after(end) && !netWorth.getCreated().before(start))
                 .collect(Collectors.groupingBy(NetWorth::getCreated,Collectors.summingDouble(NetWorth::getValue)));
+        List<DateValue> dateValueList = new ArrayList<>();
+        netWorthMap.keySet().forEach(p->dateValueList.add(new DateValue(p,netWorthMap.get(p))));
+        return dateValueList.stream().sorted(Comparator.comparing(DateValue::getCreated)).collect(Collectors.toList());
     }
 
     @Override
@@ -47,27 +56,34 @@ public class NetWorthServiceImpl implements NetWorthService{
     }
 
     @Override
-    public Map<Date,Double> getInvestmentsByTime(Date start, Date end) {
-        return netWorthDao.getAllInvestments()
+    public List<DateValue> getInvestmentsByTime(Date start, Date end) {
+        Map<Date,Double> netWorthMap = netWorthDao.getAllInvestments()
                 .stream()
                 .filter(netWorth -> !netWorth.getCreated().after(end) && !netWorth.getCreated().before(start))
                 .collect(Collectors.groupingBy(NetWorth::getCreated,Collectors.summingDouble(NetWorth::getValue)));
+        List<DateValue> dateValueList = new ArrayList<>();
+        netWorthMap.keySet().forEach(p->dateValueList.add(new DateValue(p,netWorthMap.get(p))));
+        return dateValueList.stream().sorted(Comparator.comparing(DateValue::getCreated)).collect(Collectors.toList());
     }
 
     @Override
-    public Map<Date,Double> getNetWorthByTime(Date start, Date end) {
-        netWorthList.addAll(this.getAllCash());
-        netWorthList.addAll(this.getAllInvestments());
-        return netWorthList
+    public List<DateValue> getNetWorthByTime(Date start, Date end) {
+        Map<Date,Double> netWorthMap = netWorthList
                 .stream()
                 .filter(netWorth -> !netWorth.getCreated().after(end) && !netWorth.getCreated().before(start))
                 .collect(Collectors.groupingBy(NetWorth::getCreated,Collectors.summingDouble(NetWorth::getValue)));
+        List<DateValue> dateValueList = new ArrayList<>();
+        netWorthMap.keySet().forEach(p->dateValueList.add(new DateValue(p,netWorthMap.get(p))));
+        return dateValueList.stream().sorted(Comparator.comparing(DateValue::getCreated)).collect(Collectors.toList());
+    }
+
+    @Override
+    public Map<Date, Double> getNetWorthByTime2(Date start, Date end) {
+        return null;
     }
 
     @Override
     public CashFlow getIncome(Date start, Date end) {
-        netWorthList.addAll(this.getAllCash());
-        netWorthList.addAll(this.getAllInvestments());
         Map<String,Double> cashFlow = netWorthList
                 .stream()
                 .filter(netWorth -> netWorth instanceof Investment)
@@ -80,8 +96,6 @@ public class NetWorthServiceImpl implements NetWorthService{
 
     @Override
     public CashFlow getSpending(Date start, Date end) {
-        netWorthList.addAll(this.getAllCash());
-        netWorthList.addAll(this.getAllInvestments());
         Map<String,Double> cashFlow = netWorthList
                 .stream()
                 .filter(netWorth -> netWorth instanceof Investment)
@@ -90,5 +104,9 @@ public class NetWorthServiceImpl implements NetWorthService{
                 .collect(Collectors.groupingBy(Investment::getType,Collectors.summingDouble(Investment::getSpending)));
         double totalValue = cashFlow.values().stream().mapToDouble(value -> value).sum();
         return new CashFlow(cashFlow,totalValue);
+    }
+    @Override
+    public List<NetWorth> getNetWorthList() {
+        return netWorthList;
     }
 }

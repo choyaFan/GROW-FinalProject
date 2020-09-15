@@ -1,24 +1,21 @@
 package portfolio;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import static org.mockito.Mockito.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest(classes = Application.class)
 public class NetWorthServiceTest {
-    private static final NetWorthService service = new NetWorthServiceImpl();
-    private static final Map<String, NetWorth> netWorthMap = new HashMap<>();
+
+    private NetWorthService service;
+    @Mock
+    private NetWorthDao netWorthDao;
     private static final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
     private static Date day1;
     private static Date day2;
@@ -31,9 +28,11 @@ public class NetWorthServiceTest {
     private static Date day9;
     private static Date day10;
     private static Date day11;
-
-    @BeforeAll
-    public static void init() throws ParseException{
+    List<Cash> cashList = new ArrayList<>();
+    List<Investment> investmentList = new ArrayList<>();
+    @Before
+    public void init() throws ParseException{
+        MockitoAnnotations.initMocks(this);
         day1 = sdf.parse("5/4/2015");
         day2 = sdf.parse("7/27/2015");
         day3 = sdf.parse("3/1/2018");
@@ -45,24 +44,29 @@ public class NetWorthServiceTest {
         day9 = sdf.parse("7/26/2018");
         day10 = sdf.parse("6/1/2020");
         day11 = sdf.parse("1/1/2020");
-        netWorthMap.put("i10001",new Investment("i10001","Diageo plc","DEO","Bond", day1,114.83,130));
-        netWorthMap.put("i10002",new Investment("i10002","Vanda","VNDA","Bond",day2,10.80,240));
-        netWorthMap.put("i10003",new Investment("i10003","NexPoint","NHF","Stock", day3,24.16,125));
-        netWorthMap.put("i10004",new Investment("i10004","Cadence","CDNS","Future", day4,38.02,70));
-        netWorthMap.put("i10005",new Investment("i10005","Silicon","SIMO","ETF", day5,53.64,110));
-        netWorthMap.put("i10006",new Investment("i10006","Ares","ARES","Future", day6,16.87,65));
-        netWorthMap.put("i10007",new Investment("i10007","Itau","ITCB","Stock", day7,11.45,50));
-        netWorthMap.put("i10008",new Investment("i10008","Valley","VLY","Stock", day8,9.8,200));
-        netWorthMap.put("i10009",new Investment("i10009","Echo","ECHO","Bond", day9,32.4,60));
-        netWorthMap.put("i10010",new Investment("i10010","Guggenheim","GGM","ETF", day9,21.78,80));
-        netWorthMap.put("c1",new Cash("c1","Citi","checking",1100,day4));
-        netWorthMap.put("c2",new Cash("c2","ABC","checking",500,day4));
-        netWorthMap.put("c3",new Cash("c3","Citi","saving",10000,day10));
-        netWorthMap.put("c4",new Cash("c4","AAA","saving",8888,day11));
+        investmentList.add(new Investment("i10001","Diageo plc","DEO","Bond", day1,114.83,130));
+        investmentList.add(new Investment("i10002","Vanda","VNDA","Bond",day2,10.80,240));
+        investmentList.add(new Investment("i10003","NexPoint","NHF","Stock", day3,24.16,125));
+        investmentList.add(new Investment("i10004","Cadence","CDNS","Future", day4,38.02,70));
+        investmentList.add(new Investment("i10005","Silicon","SIMO","ETF", day5,53.64,110));
+        investmentList.add(new Investment("i10006","Ares","ARES","Future", day6,16.87,65));
+        investmentList.add(new Investment("i10007","Itau","ITCB","Stock", day7,11.45,50));
+        investmentList.add(new Investment("i10008","Valley","VLY","Stock", day8,9.8,200));
+        investmentList.add(new Investment("i10009","Echo","ECHO","Bond", day9,32.4,60));
+        investmentList.add(new Investment("i10010","Guggenheim","GGM","ETF", day9,21.78,80));
+        cashList.add(new Cash("c1","Citi","checking",1100,day4));
+        cashList.add(new Cash("c2","ABC","checking",500,day4));
+        cashList.add(new Cash("c3","Citi","saving",10000,day10));
+        cashList.add(new Cash("c4","AAA","saving",8888,day11));
+        when(netWorthDao.getAllCash()).thenReturn(cashList);
+        when(netWorthDao.getAllInvestments()).thenReturn(investmentList);
+        service = new NetWorthServiceImpl(netWorthDao);
+
+
     }
     @Test
     public void test_getAllCash(){
-        List<Cash> cashList = service.getAllCash();
+        List<Cash> cashList = this.service.getAllCash();
         cashList.forEach(System.out::println);
     }
 
@@ -73,10 +77,10 @@ public class NetWorthServiceTest {
 
     @Test
     public void test_getCashByTime(){
-        Map<Date,Double> cashMap = service.getCashByTime(day4,day10);
-        cashMap.keySet().forEach(p->System.out.println(p+":"+cashMap.get(p)));
-        assertEquals(3,cashMap.size());
-        assertEquals(1600,cashMap.get(day4));
+        List<DateValue> dateValueList = service.getCashByTime(day4,day10);
+        dateValueList.forEach(System.out::println);
+        assertEquals(1600,dateValueList.get(0).getValue());
+        assertEquals(3,dateValueList.size());
         assertEquals(1,service.getCashByTime(day4,day4).size());
         assertEquals(0,service.getCashByTime(day10,day11).size());
     }
@@ -94,25 +98,25 @@ public class NetWorthServiceTest {
 
     @Test
     public void test_getInvestmentsByTime(){
-        Map<Date,Double> investmentMap = service.getInvestmentsByTime(day8,day9);
-        investmentMap.keySet().forEach(p->System.out.println(p+":"+investmentMap.get(p)));
-        assertEquals(9,investmentMap.size());
+        List<DateValue> dateValueList = service.getInvestmentsByTime(day8,day10);
+        dateValueList.forEach(System.out::println);
+        assertEquals(9,dateValueList.size());
         assertEquals(5,service.getInvestmentsByTime(day8,day7).size());
-        assertEquals(netWorthMap.get("i10005").getValue(),investmentMap.get(day5));
-        assertEquals(netWorthMap.get("i10007").getValue(),investmentMap.get(day7));
-        assertEquals(netWorthMap.get("i10009").getValue()+netWorthMap.get("i10010").getValue(),investmentMap.get(day9));
+        assertEquals(investmentList.get(4).getValue(),dateValueList.get(5).getValue());
+        assertEquals(investmentList.get(6).getValue(),dateValueList.get(4).getValue());
+        assertEquals(investmentList.get(8).getValue()+investmentList.get(9).getValue(),dateValueList.get(8).getValue());
     }
 
     @Test
     public void test_getNetWorthByTime(){
-        Map<Date,Double> nwMap = service.getNetWorthByTime(day8,day10);
-        nwMap.keySet().forEach(p->System.out.println(p+":"+nwMap.get(p)));
-        assertEquals(11,nwMap.size());
-        assertEquals(netWorthMap.get("i10007").getValue(),nwMap.get(day7));
-        assertEquals(netWorthMap.get("i10004").getValue()
-                +netWorthMap.get("c1").getValue()
-                +netWorthMap.get("c2").getValue()
-                ,nwMap.get(day4));
+        List<DateValue> dateValueList = service.getNetWorthByTime(day8,day10);
+        dateValueList.forEach(System.out::println);
+        assertEquals(11,dateValueList.size());
+        assertEquals(investmentList.get(6).getValue(),dateValueList.get(4).getValue());
+        assertEquals(investmentList.get(3).getValue()
+                +cashList.get(0).getValue()
+                +cashList.get(1).getValue()
+                ,dateValueList.get(7).getValue());
         assertEquals(5,service.getNetWorthByTime(day8,day7).size());
     }
 

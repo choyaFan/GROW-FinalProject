@@ -8,13 +8,16 @@ public interface NetWorthService {
     // cash service
     List<Cash> getAllCash();
     double getCashTotalValue();
-    Map<Date,Double> getCashByTime(Date start, Date end);
+    List<DateValue> getCashByTime(Date start, Date end);
     // investment service
     List<Investment> getAllInvestments();
     double getInvestmentTotalValue();
-    Map<Date,Double> getInvestmentsByTime(Date start, Date end);
+    List<DateValue> getInvestmentsByTime(Date start, Date end);
     // net worth service
-    Map<Date,Double> getNetWorthByTime(Date start, Date end);
+    List<DateValue> getNetWorthByTime(Date start, Date end);
+    Map<Date,Double> getNetWorthByTime2(Date start, Date end);
     CashFlow getIncome(Date start, Date end);
     CashFlow getSpending(Date start, Date end);
+
+    public List<NetWorth> getNetWorthList();
 }
