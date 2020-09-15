@@ -20,7 +20,6 @@ public class Investment extends NetWorth{
         prices.put("Valley", 10.8);
         prices.put("Echo", 33.3);
         prices.put("Guggenheim", 21.7);
-
     }
 
     private String symbol;

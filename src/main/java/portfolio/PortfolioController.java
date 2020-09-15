@@ -25,15 +25,21 @@ public class PortfolioController {
     public double getCashTotalValue(){
         return service.getCashTotalValue();
     }
-    @GetMapping(value = "/getCashByTime")
-    public ResponseEntity<List<DateValue>> getCashByTime(@RequestParam("start") String start, @RequestParam("end") String end){
-        try{
-            return new ResponseEntity<>(service.getCashByTime(sdf.parse(start),sdf.parse(end)), HttpStatus.OK);
-        } catch (ParseException ex){
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("msg","Date should be in format:MM/dd/yyyy.");
-            return new ResponseEntity<>(null, headers,HttpStatus.BAD_REQUEST);
-        }
+    @GetMapping("/getCash_preWeek")
+    public List<CashValue> getCash_preWeek(){
+        return service.getCash_preWeek();
+    }
+    @GetMapping("/getCash_preMonth")
+    public List<CashValue> getCash_preMonth(){
+        return service.getCash_preMonth();
+    }
+    @GetMapping("/getCash_preQuarter")
+    public List<CashValue> getCash_preQuarter(){
+        return service.getCash_preQuarter();
+    }
+    @GetMapping("/getCash_preYear")
+    public List<CashValue> getCash_preYear(){
+        return service.getCash_preYear();
     }
     @GetMapping("/getAllInvestments")
     public List<Investment> getAllInvestments(){
@@ -43,25 +49,37 @@ public class PortfolioController {
     public double getInvestmentTotalValue(){
         return service.getInvestmentTotalValue();
     }
-    @GetMapping("/getInvestmentsByTime")
-    public ResponseEntity<List<DateValue>> getInvestmentsByTime(@RequestParam("start") String start, @RequestParam("end") String end){
-        try{
-            return new ResponseEntity<>(service.getInvestmentsByTime(sdf.parse(start),sdf.parse(end)), HttpStatus.OK);
-        } catch (ParseException ex){
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("msg","Date should be in format:MM/dd/yyyy.");
-            return new ResponseEntity<>(null, headers,HttpStatus.BAD_REQUEST);
-        }
+    @GetMapping("/getInvestment_preWeek")
+    public List<InvestmentValue> getInvestment_preWeek(){
+        return service.getInvestment_preWeek();
     }
-    @GetMapping("/getNetWorthByTime")
-    public ResponseEntity<List<DateValue>> getNetWorthByTime(@RequestParam("start") String start, @RequestParam("end") String end){
-        try{
-            return new ResponseEntity<>(service.getNetWorthByTime(sdf.parse(start),sdf.parse(end)), HttpStatus.OK);
-        } catch (ParseException ex){
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("msg","Date should be in format:MM/dd/yyyy.");
-            return new ResponseEntity<>(null, headers,HttpStatus.BAD_REQUEST);
-        }
+    @GetMapping("/getInvestment_preMonth")
+    public List<InvestmentValue> getInvestment_preMonth(){
+        return service.getInvestment_preMonth();
+    }
+    @GetMapping("/getInvestment_preQuarter")
+    public List<InvestmentValue> getInvestment_preQuarter(){
+        return service.getInvestment_preQuarter();
+    }
+    @GetMapping("/getInvestment_preYear")
+    public List<InvestmentValue> getInvestment_preYear(){
+        return service.getInvestment_preYear();
+    }
+    @GetMapping("/getNetWorth_preWeek")
+    public List<NetWorthValue> getNetWorth_preWeek(){
+        return service.getNetWorth_preWeek();
+    }
+    @GetMapping("/getNetWorth_preMonth")
+    public List<NetWorthValue> getNetWorth_preMonth(){
+        return service.getNetWorth_preMonth();
+    }
+    @GetMapping("/getNetWorth_preQuarter")
+    public List<NetWorthValue> getNetWorth_preQuarter(){
+        return service.getNetWorth_preQuarter();
+    }
+    @GetMapping("/getNetWorth_preYear")
+    public List<NetWorthValue> getNetWorth_preYear(){
+        return service.getNetWorth_preYear();
     }
     @GetMapping("/getIncome")
     public ResponseEntity<CashFlow> getIncome(@RequestParam("start") String start, @RequestParam("end") String end){

@@ -2,22 +2,30 @@ package portfolio;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public interface NetWorthService {
     // cash service
     List<Cash> getAllCash();
     double getCashTotalValue();
-    List<DateValue> getCashByTime(Date start, Date end);
+    List<CashValue> getCash_preWeek();
+    List<CashValue> getCash_preMonth();
+    List<CashValue> getCash_preQuarter();
+    List<CashValue> getCash_preYear();
+
     // investment service
     List<Investment> getAllInvestments();
     double getInvestmentTotalValue();
-    List<DateValue> getInvestmentsByTime(Date start, Date end);
+    List<InvestmentValue> getInvestment_preWeek();
+    List<InvestmentValue> getInvestment_preMonth();
+    List<InvestmentValue> getInvestment_preQuarter();
+    List<InvestmentValue> getInvestment_preYear();
     // net worth service
-    List<DateValue> getNetWorthByTime(Date start, Date end);
-    Map<Date,Double> getNetWorthByTime2(Date start, Date end);
+    List<NetWorthValue> getNetWorth_preWeek();
+    List<NetWorthValue> getNetWorth_preMonth();
+    List<NetWorthValue> getNetWorth_preQuarter();
+    List<NetWorthValue> getNetWorth_preYear();
     CashFlow getIncome(Date start, Date end);
     CashFlow getSpending(Date start, Date end);
 
-    public List<NetWorth> getNetWorthList();
+    List<NetWorth> getNetWorthList();
 }

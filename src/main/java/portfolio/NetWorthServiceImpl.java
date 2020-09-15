@@ -32,14 +32,23 @@ public class NetWorthServiceImpl implements NetWorthService{
     }
 
     @Override
-    public List<DateValue> getCashByTime(Date start, Date end) {
-        Map<Date,Double> netWorthMap = netWorthDao.getAllCash()
-                .stream()
-                .filter(netWorth -> !netWorth.getCreated().after(end) && !netWorth.getCreated().before(start))
-                .collect(Collectors.groupingBy(NetWorth::getCreated,Collectors.summingDouble(NetWorth::getValue)));
-        List<DateValue> dateValueList = new ArrayList<>();
-        netWorthMap.keySet().forEach(p->dateValueList.add(new DateValue(p,netWorthMap.get(p))));
-        return dateValueList.stream().sorted(Comparator.comparing(DateValue::getCreated)).collect(Collectors.toList());
+    public List<CashValue> getCash_preWeek() {
+        return netWorthDao.getCash_preWeek();
+    }
+
+    @Override
+    public List<CashValue> getCash_preMonth() {
+        return netWorthDao.getCash_preMonth();
+    }
+
+    @Override
+    public List<CashValue> getCash_preQuarter() {
+        return netWorthDao.getCash_preQuarter();
+    }
+
+    @Override
+    public List<CashValue> getCash_preYear() {
+        return netWorthDao.getCash_preYear();
     }
 
     @Override
@@ -56,30 +65,83 @@ public class NetWorthServiceImpl implements NetWorthService{
     }
 
     @Override
-    public List<DateValue> getInvestmentsByTime(Date start, Date end) {
-        Map<Date,Double> netWorthMap = netWorthDao.getAllInvestments()
-                .stream()
-                .filter(netWorth -> !netWorth.getCreated().after(end) && !netWorth.getCreated().before(start))
-                .collect(Collectors.groupingBy(NetWorth::getCreated,Collectors.summingDouble(NetWorth::getValue)));
-        List<DateValue> dateValueList = new ArrayList<>();
-        netWorthMap.keySet().forEach(p->dateValueList.add(new DateValue(p,netWorthMap.get(p))));
-        return dateValueList.stream().sorted(Comparator.comparing(DateValue::getCreated)).collect(Collectors.toList());
+    public List<InvestmentValue> getInvestment_preWeek() {
+        return netWorthDao.getInvestment_preWeek();
     }
 
     @Override
-    public List<DateValue> getNetWorthByTime(Date start, Date end) {
-        Map<Date,Double> netWorthMap = netWorthList
-                .stream()
-                .filter(netWorth -> !netWorth.getCreated().after(end) && !netWorth.getCreated().before(start))
-                .collect(Collectors.groupingBy(NetWorth::getCreated,Collectors.summingDouble(NetWorth::getValue)));
-        List<DateValue> dateValueList = new ArrayList<>();
-        netWorthMap.keySet().forEach(p->dateValueList.add(new DateValue(p,netWorthMap.get(p))));
-        return dateValueList.stream().sorted(Comparator.comparing(DateValue::getCreated)).collect(Collectors.toList());
+    public List<InvestmentValue> getInvestment_preMonth() {
+        return netWorthDao.getInvestment_preMonth();
     }
 
     @Override
-    public Map<Date, Double> getNetWorthByTime2(Date start, Date end) {
-        return null;
+    public List<InvestmentValue> getInvestment_preQuarter() {
+        return netWorthDao.getInvestment_preQuarter();
+    }
+
+    @Override
+    public List<InvestmentValue> getInvestment_preYear() {
+        return netWorthDao.getInvestment_preYear();
+    }
+
+    @Override
+    public List<NetWorthValue> getNetWorth_preWeek() {
+        List<NetWorthValue> netWorthList1 = new ArrayList<>(netWorthDao.getCash_preWeek());
+        List<NetWorthValue> netWorthList2 = new ArrayList<>(netWorthDao.getInvestment_preWeek());
+        for(NetWorthValue n1:netWorthList1){
+            for(NetWorthValue n2:netWorthList2){
+                if(n1.getCreated().equals(n2.getCreated())){
+                    n1.setValue(n1.getValue()+n2.getValue());
+                    break;
+                }
+            }
+        }
+        return netWorthList1;
+    }
+
+    @Override
+    public List<NetWorthValue> getNetWorth_preMonth() {
+        List<NetWorthValue> netWorthList1 = new ArrayList<>(netWorthDao.getCash_preMonth());
+        List<NetWorthValue> netWorthList2 = new ArrayList<>(netWorthDao.getInvestment_preMonth());
+        for(NetWorthValue n1:netWorthList1){
+            for(NetWorthValue n2:netWorthList2){
+                if(n1.getCreated().equals(n2.getCreated())){
+                    n1.setValue(n1.getValue()+n2.getValue());
+                    break;
+                }
+            }
+        }
+        return netWorthList1;
+    }
+
+    @Override
+    public List<NetWorthValue> getNetWorth_preQuarter() {
+        List<NetWorthValue> netWorthList1 = new ArrayList<>(netWorthDao.getCash_preQuarter());
+        List<NetWorthValue> netWorthList2 = new ArrayList<>(netWorthDao.getInvestment_preQuarter());
+        for(NetWorthValue n1:netWorthList1){
+            for(NetWorthValue n2:netWorthList2){
+                if(n1.getCreated().equals(n2.getCreated())){
+                    n1.setValue(n1.getValue()+n2.getValue());
+                    break;
+                }
+            }
+        }
+        return netWorthList1;
+    }
+
+    @Override
+    public List<NetWorthValue> getNetWorth_preYear() {
+        List<NetWorthValue> netWorthList1 = new ArrayList<>(netWorthDao.getCash_preYear());
+        List<NetWorthValue> netWorthList2 = new ArrayList<>(netWorthDao.getInvestment_preYear());
+        for(NetWorthValue n1:netWorthList1){
+            for(NetWorthValue n2:netWorthList2){
+                if(n1.getCreated().equals(n2.getCreated())){
+                    n1.setValue(n1.getValue()+n2.getValue());
+                    break;
+                }
+            }
+        }
+        return netWorthList1;
     }
 
     @Override
