@@ -8,68 +8,56 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 
 @Service
 public class MarketServiceImpl implements MarketService {
-    private final Map<String,NetWorth> netWorthMap;
-
+    private final NetWorthService worthService;
     Map<String, Double> sortedYieldMap = new LinkedHashMap<>();
     Map<String, Double> priceMap = new LinkedHashMap<>();
     JSONObject index;
 
     @Autowired
-    public MarketServiceImpl(Map<String, NetWorth> netWorthMap) {
-        this.netWorthMap = netWorthMap;
+    public MarketServiceImpl(NetWorthServiceImpl netWorthService) {
+        this.worthService = netWorthService;
     }
 
-    @Autowired
-    private NetWorthService worthService;
     @Override
-    public String getIndicesPercent() {
+    public String getIndices() {
         JSONObject indices = new JSONObject();
-        indices.put("DOW JONES", getChangeByName("DOW JONES"));
-        indices.put("S&P 500", getChangeByName("S&P 500"));
-        indices.put("NASDAQ", getChangeByName("NASDAQ"));
-        indices.put("SSE Composite Index", getChangeByName("SSE Composite Index"));
+        getIndexByName("DOW JONES");
+        getIndexByName("S&P 500");
+        getIndexByName("NASDAQ");
+        getIndexByName("SSE Composite Index");
         return JSON.toJSONString(indices);
     }
 
     @Override
-    public String getGainersPercent() {
+    public String getGainers() {
         Map<String, Double> gainerMap = new LinkedHashMap<>();
         for(String name : sortedYieldMap.keySet()){
-            if(sortedYieldMap.get(name) >= 0 && gainerMap.size() <= 5)
-                gainerMap.put(name, sortedYieldMap.get(name));
+            if(sortedYieldMap.get(name) >= 0 && gainerMap.size() <= 10){
+                gainerMap.put(name + "(Percent)", sortedYieldMap.get(name));
+                gainerMap.put(name + "(Value)", priceMap.get(name));
+            }
             else break;
         }
+        System.out.println(gainerMap);
         return JSON.toJSONString(gainerMap);
     }
 
     @Override
-    public String getLosersPercent() {
+    public String getLosers() {
         Map<String, Double> loserMap = new LinkedHashMap<>();
         for(String name : sortedYieldMap.keySet()){
-            if(sortedYieldMap.get(name) <= 0 && loserMap.size() < 5)
-                loserMap.put(name, sortedYieldMap.get(name));
+            if(sortedYieldMap.get(name) <= 0 && loserMap.size() < 10){
+                loserMap.put(name + "(Percent)", sortedYieldMap.get(name));
+                loserMap.put(name + "(Value)", priceMap.get(name));
+            }
         }
+        System.out.println(loserMap);
         return JSON.toJSONString(loserMap);
-    }
-
-    @Override
-    public String getIndicesValue() {
-
-        return null;
-    }
-
-    @Override
-    public String getGainersValue() {
-        return null;
-    }
-
-    @Override
-    public String getLosersValue() {
-        return null;
     }
 
     @Override
@@ -84,7 +72,7 @@ public class MarketServiceImpl implements MarketService {
         return Double.parseDouble(String.format("%.2f", holdingYield));
     }
 
-    public String getChangeByName(String name){
+    public void getIndexByName(String name) {
         Map<String, String> nameMap = new HashMap<>();
         nameMap.put("DOW JONES", "%255EDJI");
         nameMap.put("S&P 500", "%255EGSPC");
@@ -101,7 +89,8 @@ public class MarketServiceImpl implements MarketService {
         }
         JSONObject json = JSON.parseObject(response.getBody());
         JSONObject price = json.getJSONObject("price");
-        return price.getJSONObject("regularMarketChangePercent").getString("fmt");
+        index.put("DOW JONES(PERCENT)",price.getJSONObject("regularMarketChangePercent").getString("fmt"));
+        index.put("DOW JONES(VALUE)",price.getJSONObject("regularMarketPrice").getString("fmt"));
     }
 
     public String getPriceBySymbol(String symbol){
@@ -119,6 +108,7 @@ public class MarketServiceImpl implements MarketService {
         return price.getJSONObject("regularMarketPrice").getString("fmt");
     }
 
+    @PostConstruct
     @Override
     public void initData() {
         Map<String, Double> yieldMap = new TreeMap<>();
@@ -131,6 +121,7 @@ public class MarketServiceImpl implements MarketService {
                 priceMap.put(netWorth.getName(), marketPrice);
             }
         }
+        // sort the Yield Map
         List<Map.Entry<String, Double>> list = new ArrayList<>(yieldMap.entrySet());
         list.sort((o1, o2) -> {
             if (o1.getValue() < 0 && o2.getValue() < 0){

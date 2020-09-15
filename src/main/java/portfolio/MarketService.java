@@ -3,12 +3,9 @@ package portfolio;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
 public interface MarketService {
-    String getIndicesPercent();
-    String getGainersPercent();
-    String getLosersPercent();
-    String getIndicesValue();
-    String getGainersValue();
-    String getLosersValue();
+    String getIndices();
+    String getGainers();
+    String getLosers();
     double getHoldings();
     void initData();
 }

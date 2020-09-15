@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Document(collection = "investment")
-public class Investment extends NetWorth{
+public class Investment extends NetWorth {
     private static final Map<String,Double> prices = new HashMap<>();
     static {
         prices.put("Diageo plc", 120.0);
