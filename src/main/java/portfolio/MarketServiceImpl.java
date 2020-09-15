@@ -12,12 +12,10 @@ import java.util.*;
 
 @Component
 public class MarketServiceImpl implements MarketService {
-    @Autowired
-    public Map<String,NetWorth> netWorthMap;
-
     Map<String, Double> sortedYieldMap = new LinkedHashMap<>();
     Map<String, Double> priceMap = new LinkedHashMap<>();
-
+    @Autowired
+    private NetWorthService worthService;
     @Override
     public String getIndices() {
         JSONObject indices = new JSONObject();
@@ -52,7 +50,7 @@ public class MarketServiceImpl implements MarketService {
     @Override
     public double getHoldings() {
         double holdingYield = 0;
-        for(NetWorth netWorth : netWorthMap.values()){
+        for(NetWorth netWorth : worthService.getNetWorthList()){
             if(netWorth instanceof Investment){
                 double changeValue = (priceMap.get(netWorth.getName()) - ((Investment) netWorth).getPurchasePrice()) * ((Investment) netWorth).getShares();
                 holdingYield += changeValue / netWorth.getValue();
@@ -99,7 +97,7 @@ public class MarketServiceImpl implements MarketService {
     @Override
     public void initData() {
         Map<String, Double> yieldMap = new TreeMap<>();
-        for(NetWorth netWorth : netWorthMap.values()){
+        for(NetWorth netWorth : worthService.getNetWorthList()){
             if(netWorth instanceof Investment){
                 double purchasePrice = ((Investment) netWorth).getPurchasePrice();
                 double marketPrice = Double.parseDouble(getPriceBySymbol(((Investment) netWorth).getSymbol()));

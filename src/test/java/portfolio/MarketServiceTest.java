@@ -1,21 +1,27 @@
 package portfolio;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 public class MarketServiceTest {
     private static final MarketService service = new MarketServiceImpl();
-    private static final Map<String, NetWorth> netWorthMap = new HashMap<>();
+    private static final List<Investment> investmentList = new ArrayList<>();
     private static final SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+    @Mock
+    NetWorthDao netWorthDao;
 
-    @BeforeClass
-    public static void init() throws ParseException, NoSuchFieldException, IllegalAccessException {
+    @Before
+    public void init() throws ParseException, NoSuchFieldException, IllegalAccessException {
+        MockitoAnnotations.initMocks(this);
         Date day1 = sdf.parse("5/4/2015");
         Date day2 = sdf.parse("7/27/2015");
         Date day3 = sdf.parse("3/1/2018");
@@ -27,21 +33,21 @@ public class MarketServiceTest {
         Date day9 = sdf.parse("7/26/2018");
         Date day10 = sdf.parse("6/1/2020");
 
-        netWorthMap.put("i10001",new Investment("i10001","Diageo plc","DEO", "bond", day1,114.83,130));
-        netWorthMap.put("i10002",new Investment("i10002","Vanda","VNDA","bond", day2,10.80,240));
-        netWorthMap.put("i10003",new Investment("i10003","NexPoint","NHF", "bond", day3,24.16,125));
-        netWorthMap.put("i10004",new Investment("i10004","Cadence","CDNS", "bond", day4,38.02,70));
-        netWorthMap.put("i10005",new Investment("i10005","Silicon","SIMO", "bond", day5,53.64,110));
-        netWorthMap.put("i10006",new Investment("i10006","Ares","ARES", "bond", day6,16.87,65));
-        netWorthMap.put("i10007",new Investment("i10007","Itau","ITCB", "bond", day7,11.45,50));
-        netWorthMap.put("i10008",new Investment("i10008","Valley","VLY", "bond", day8,9.8,200));
-        netWorthMap.put("i10009",new Investment("i10009","Echo","ECHO", "bond", day9,32.4,60));
-        netWorthMap.put("i10010",new Investment("i10010","Guggenheim","GGM", "bond", day10,21.78,80));
-
-        Field field = MarketServiceImpl.class.getField("netWorthMap");
+        investmentList.add(new Investment("i10001","Diageo plc","DEO", "bond", day1,114.83,130));
+        investmentList.add(new Investment("i10002","Vanda","VNDA","bond", day2,10.80,240));
+        investmentList.add(new Investment("i10003","NexPoint","NHF", "bond", day3,24.16,125));
+        investmentList.add(new Investment("i10004","Cadence","CDNS", "bond", day4,38.02,70));
+        investmentList.add(new Investment("i10005","Silicon","SIMO", "bond", day5,53.64,110));
+        investmentList.add(new Investment("i10006","Ares","ARES", "bond", day6,16.87,65));
+        investmentList.add(new Investment("i10007","Itau","ITCB", "bond", day7,11.45,50));
+        investmentList.add(new Investment("i10008","Valley","VLY", "bond", day8,9.8,200));
+        investmentList.add(new Investment("i10009","Echo","ECHO", "bond", day9,32.4,60));
+        investmentList.add(new Investment("i10010","Guggenheim","GGM", "bond", day10,21.78,80));
+        when(netWorthDao.getAllInvestments()).thenReturn(investmentList);
+        NetWorthService netWorthService = new NetWorthServiceImpl(netWorthDao);
+        Field field = MarketServiceImpl.class.getDeclaredField("worthService");
         field.setAccessible(true);
-        field.set(service,netWorthMap);
-
+        field.set(service,netWorthService);
         service.initData();
     }
 

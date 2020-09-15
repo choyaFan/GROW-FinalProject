@@ -3,83 +3,88 @@ package portfolio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
 public class NetWorthServiceImpl implements NetWorthService{
-
     @Autowired
-    public Map<String,NetWorth> netWorthMap;
+    private final NetWorthDao netWorthDao;
+    private final List<NetWorth> netWorthList = new ArrayList<>();
+
+    public NetWorthServiceImpl(NetWorthDao netWorthDao) {
+        this.netWorthDao = netWorthDao;
+        this.netWorthList.addAll(this.getAllCash());
+        this.netWorthList.addAll(this.getAllInvestments());
+    }
 
     @Override
-    public List<NetWorth> getAllCash() {
-        return netWorthMap.values()
-                .stream()
-                .filter(netWorth -> netWorth instanceof Cash)
-                .sorted(Comparator.comparing(NetWorth::getCreated))
-                .collect(Collectors.toList());
+    public List<Cash> getAllCash() {
+        return netWorthDao.getAllCash();
     }
 
     @Override
     public double getCashTotalValue() {
-        return netWorthMap.values()
+        return netWorthDao.getAllCash()
                 .stream()
-                .filter(netWorth -> netWorth instanceof Cash)
-                .mapToDouble(NetWorth::getValue)
+                .mapToDouble(Cash::getValue)
                 .sum();
     }
 
     @Override
-    public Map<Date,Double> getCashByTime(Date start, Date end) {
-        return netWorthMap.values()
+    public List<DateValue> getCashByTime(Date start, Date end) {
+        Map<Date,Double> netWorthMap = netWorthDao.getAllCash()
                 .stream()
-                .filter(netWorth -> netWorth instanceof Cash)
                 .filter(netWorth -> !netWorth.getCreated().after(end) && !netWorth.getCreated().before(start))
                 .collect(Collectors.groupingBy(NetWorth::getCreated,Collectors.summingDouble(NetWorth::getValue)));
+        List<DateValue> dateValueList = new ArrayList<>();
+        netWorthMap.keySet().forEach(p->dateValueList.add(new DateValue(p,netWorthMap.get(p))));
+        return dateValueList.stream().sorted(Comparator.comparing(DateValue::getCreated)).collect(Collectors.toList());
     }
 
     @Override
-    public List<NetWorth> getAllInvestments() {
-        return netWorthMap.values()
-                .stream()
-                .filter(netWorth -> netWorth instanceof Investment)
-                .sorted(Comparator.comparing(NetWorth::getCreated))
-                .collect(Collectors.toList());
+    public List<Investment> getAllInvestments() {
+        return netWorthDao.getAllInvestments();
     }
 
     @Override
     public double getInvestmentTotalValue() {
-        return netWorthMap.values()
+        return netWorthDao.getAllInvestments()
                 .stream()
-                .filter(netWorth -> netWorth instanceof Investment)
                 .mapToDouble(NetWorth::getValue)
                 .sum();
     }
 
     @Override
-    public Map<Date,Double> getInvestmentsByTime(Date start, Date end) {
-        return netWorthMap.values()
+    public List<DateValue> getInvestmentsByTime(Date start, Date end) {
+        Map<Date,Double> netWorthMap = netWorthDao.getAllInvestments()
                 .stream()
-                .filter(netWorth -> netWorth instanceof Investment)
                 .filter(netWorth -> !netWorth.getCreated().after(end) && !netWorth.getCreated().before(start))
                 .collect(Collectors.groupingBy(NetWorth::getCreated,Collectors.summingDouble(NetWorth::getValue)));
+        List<DateValue> dateValueList = new ArrayList<>();
+        netWorthMap.keySet().forEach(p->dateValueList.add(new DateValue(p,netWorthMap.get(p))));
+        return dateValueList.stream().sorted(Comparator.comparing(DateValue::getCreated)).collect(Collectors.toList());
     }
 
     @Override
-    public Map<Date,Double> getNetWorthByTime(Date start, Date end) {
-        return netWorthMap.values()
+    public List<DateValue> getNetWorthByTime(Date start, Date end) {
+        Map<Date,Double> netWorthMap = netWorthList
                 .stream()
                 .filter(netWorth -> !netWorth.getCreated().after(end) && !netWorth.getCreated().before(start))
                 .collect(Collectors.groupingBy(NetWorth::getCreated,Collectors.summingDouble(NetWorth::getValue)));
+        List<DateValue> dateValueList = new ArrayList<>();
+        netWorthMap.keySet().forEach(p->dateValueList.add(new DateValue(p,netWorthMap.get(p))));
+        return dateValueList.stream().sorted(Comparator.comparing(DateValue::getCreated)).collect(Collectors.toList());
+    }
+
+    @Override
+    public Map<Date, Double> getNetWorthByTime2(Date start, Date end) {
+        return null;
     }
 
     @Override
     public CashFlow getIncome(Date start, Date end) {
-        Map<String,Double> cashFlow = netWorthMap.values()
+        Map<String,Double> cashFlow = netWorthList
                 .stream()
                 .filter(netWorth -> netWorth instanceof Investment)
                 .filter(netWorth -> !netWorth.getCreated().after(end) && !netWorth.getCreated().before(start))
@@ -91,7 +96,7 @@ public class NetWorthServiceImpl implements NetWorthService{
 
     @Override
     public CashFlow getSpending(Date start, Date end) {
-        Map<String,Double> cashFlow = netWorthMap.values()
+        Map<String,Double> cashFlow = netWorthList
                 .stream()
                 .filter(netWorth -> netWorth instanceof Investment)
                 .filter(netWorth -> !netWorth.getCreated().after(end) && !netWorth.getCreated().before(start))
@@ -100,5 +105,8 @@ public class NetWorthServiceImpl implements NetWorthService{
         double totalValue = cashFlow.values().stream().mapToDouble(value -> value).sum();
         return new CashFlow(cashFlow,totalValue);
     }
-
+    @Override
+    public List<NetWorth> getNetWorthList() {
+        return netWorthList;
+    }
 }
