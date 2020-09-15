@@ -1,9 +1,12 @@
 package portfolio;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+@Document(collection = "investment")
 public class Investment extends NetWorth{
     private static final Map<String,Double> prices = new HashMap<>();
     static {

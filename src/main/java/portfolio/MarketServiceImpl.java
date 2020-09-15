@@ -8,13 +8,12 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 
 @Service
 public class MarketServiceImpl implements MarketService {
     private final Map<String,NetWorth> netWorthMap;
-    
+
     Map<String, Double> sortedYieldMap = new LinkedHashMap<>();
     Map<String, Double> priceMap = new LinkedHashMap<>();
     JSONObject index;
@@ -24,13 +23,15 @@ public class MarketServiceImpl implements MarketService {
         this.netWorthMap = netWorthMap;
     }
 
+    @Autowired
+    private NetWorthService worthService;
     @Override
     public String getIndicesPercent() {
         JSONObject indices = new JSONObject();
-        indices.put("DOW JONES(Percent)", getIndexByName("DOW JONES"));
-        indices.put("S&P 500(Percent)", getIndexByName("S&P 500"));
-        indices.put("NASDAQ(Percent)", getIndexByName("NASDAQ"));
-        indices.put("SSE Composite Index(Percent)", getIndexByName("SSE Composite Index"));
+        indices.put("DOW JONES", getChangeByName("DOW JONES"));
+        indices.put("S&P 500", getChangeByName("S&P 500"));
+        indices.put("NASDAQ", getChangeByName("NASDAQ"));
+        indices.put("SSE Composite Index", getChangeByName("SSE Composite Index"));
         return JSON.toJSONString(indices);
     }
 
@@ -57,7 +58,7 @@ public class MarketServiceImpl implements MarketService {
 
     @Override
     public String getIndicesValue() {
-        
+
         return null;
     }
 
@@ -74,7 +75,7 @@ public class MarketServiceImpl implements MarketService {
     @Override
     public double getHoldings() {
         double holdingYield = 0;
-        for(NetWorth netWorth : netWorthMap.values()){
+        for(NetWorth netWorth : worthService.getNetWorthList()){
             if(netWorth instanceof Investment){
                 double changeValue = (priceMap.get(netWorth.getName()) - ((Investment) netWorth).getPurchasePrice()) * ((Investment) netWorth).getShares();
                 holdingYield += changeValue / netWorth.getValue();
@@ -83,7 +84,7 @@ public class MarketServiceImpl implements MarketService {
         return Double.parseDouble(String.format("%.2f", holdingYield));
     }
 
-    public String getIndexByName(String name) {
+    public String getChangeByName(String name){
         Map<String, String> nameMap = new HashMap<>();
         nameMap.put("DOW JONES", "%255EDJI");
         nameMap.put("S&P 500", "%255EGSPC");
@@ -99,8 +100,8 @@ public class MarketServiceImpl implements MarketService {
             e.printStackTrace();
         }
         JSONObject json = JSON.parseObject(response.getBody());
-        index = json.getJSONObject("price");
-        return index.getJSONObject("regularMarketChangePercent").getString("fmt");
+        JSONObject price = json.getJSONObject("price");
+        return price.getJSONObject("regularMarketChangePercent").getString("fmt");
     }
 
     public String getPriceBySymbol(String symbol){
@@ -118,11 +119,10 @@ public class MarketServiceImpl implements MarketService {
         return price.getJSONObject("regularMarketPrice").getString("fmt");
     }
 
-    @PostConstruct
     @Override
     public void initData() {
         Map<String, Double> yieldMap = new TreeMap<>();
-        for(NetWorth netWorth : netWorthMap.values()){
+        for(NetWorth netWorth : worthService.getNetWorthList()){
             if(netWorth instanceof Investment){
                 double purchasePrice = ((Investment) netWorth).getPurchasePrice();
                 double marketPrice = Double.parseDouble(getPriceBySymbol(((Investment) netWorth).getSymbol()));
