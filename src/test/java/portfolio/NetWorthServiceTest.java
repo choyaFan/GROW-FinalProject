@@ -76,16 +76,6 @@ public class NetWorthServiceTest {
     }
 
     @Test
-    public void test_getCashByTime(){
-        List<DateValue> dateValueList = service.getCashByTime(day4,day10);
-        dateValueList.forEach(System.out::println);
-        assertEquals(1600,dateValueList.get(0).getValue());
-        assertEquals(3,dateValueList.size());
-        assertEquals(1,service.getCashByTime(day4,day4).size());
-        assertEquals(0,service.getCashByTime(day10,day11).size());
-    }
-
-    @Test
     public void test_getAllInvestments(){
         List<Investment> investments = service.getAllInvestments();
         investments.forEach(System.out::println);
@@ -94,30 +84,6 @@ public class NetWorthServiceTest {
     @Test
     public void test_getInvestmentTotalValue(){
         System.out.println(service.getInvestmentTotalValue());
-    }
-
-    @Test
-    public void test_getInvestmentsByTime(){
-        List<DateValue> dateValueList = service.getInvestmentsByTime(day8,day10);
-        dateValueList.forEach(System.out::println);
-        assertEquals(9,dateValueList.size());
-        assertEquals(5,service.getInvestmentsByTime(day8,day7).size());
-        assertEquals(investmentList.get(4).getValue(),dateValueList.get(5).getValue());
-        assertEquals(investmentList.get(6).getValue(),dateValueList.get(4).getValue());
-        assertEquals(investmentList.get(8).getValue()+investmentList.get(9).getValue(),dateValueList.get(8).getValue());
-    }
-
-    @Test
-    public void test_getNetWorthByTime(){
-        List<DateValue> dateValueList = service.getNetWorthByTime(day8,day10);
-        dateValueList.forEach(System.out::println);
-        assertEquals(11,dateValueList.size());
-        assertEquals(investmentList.get(6).getValue(),dateValueList.get(4).getValue());
-        assertEquals(investmentList.get(3).getValue()
-                +cashList.get(0).getValue()
-                +cashList.get(1).getValue()
-                ,dateValueList.get(7).getValue());
-        assertEquals(5,service.getNetWorthByTime(day8,day7).size());
     }
 
     @Test

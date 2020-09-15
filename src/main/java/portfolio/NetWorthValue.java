@@ -1,21 +1,24 @@
 package portfolio;
 
-import java.util.Date;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-public class DateValue {
-    private Date created;
-    private double value;
+import java.time.LocalDate;
 
-    public DateValue(Date created, double value) {
+@Document(collection = "netWorthValue")
+public class NetWorthValue {
+    LocalDate created;
+    double value;
+
+    public NetWorthValue(LocalDate created, double value) {
         this.created = created;
         this.value = value;
     }
 
-    public Date getCreated() {
+    public LocalDate getCreated() {
         return created;
     }
 
-    public void setCreated(Date created) {
+    public void setCreated(LocalDate created) {
         this.created = created;
     }
 

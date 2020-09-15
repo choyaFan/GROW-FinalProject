@@ -1,5 +1,6 @@
 package portfolio;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public abstract class NetWorth {
@@ -48,4 +49,5 @@ public abstract class NetWorth {
     public void setType(String type) {
         this.type = type;
     }
+
 }
