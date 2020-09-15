@@ -6,30 +6,36 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.util.*;
 
-@Component
+@Service
 public class MarketServiceImpl implements MarketService {
-    @Autowired
-    public Map<String,NetWorth> netWorthMap;
-
+    private final Map<String,NetWorth> netWorthMap;
+    
     Map<String, Double> sortedYieldMap = new LinkedHashMap<>();
     Map<String, Double> priceMap = new LinkedHashMap<>();
+    JSONObject index;
+
+    @Autowired
+    public MarketServiceImpl(Map<String, NetWorth> netWorthMap) {
+        this.netWorthMap = netWorthMap;
+    }
 
     @Override
-    public String getIndices() {
+    public String getIndicesPercent() {
         JSONObject indices = new JSONObject();
-        indices.put("DOW JONES", getChangeByName("DOW JONES"));
-        indices.put("S&P 500", getChangeByName("S&P 500"));
-        indices.put("NASDAQ", getChangeByName("NASDAQ"));
-        indices.put("SSE Composite Index", getChangeByName("SSE Composite Index"));
+        indices.put("DOW JONES(Percent)", getIndexByName("DOW JONES"));
+        indices.put("S&P 500(Percent)", getIndexByName("S&P 500"));
+        indices.put("NASDAQ(Percent)", getIndexByName("NASDAQ"));
+        indices.put("SSE Composite Index(Percent)", getIndexByName("SSE Composite Index"));
         return JSON.toJSONString(indices);
     }
 
     @Override
-    public String getGainers() {
+    public String getGainersPercent() {
         Map<String, Double> gainerMap = new LinkedHashMap<>();
         for(String name : sortedYieldMap.keySet()){
             if(sortedYieldMap.get(name) >= 0 && gainerMap.size() <= 5)
@@ -40,13 +46,29 @@ public class MarketServiceImpl implements MarketService {
     }
 
     @Override
-    public String getLosers() {
+    public String getLosersPercent() {
         Map<String, Double> loserMap = new LinkedHashMap<>();
         for(String name : sortedYieldMap.keySet()){
             if(sortedYieldMap.get(name) <= 0 && loserMap.size() < 5)
                 loserMap.put(name, sortedYieldMap.get(name));
         }
         return JSON.toJSONString(loserMap);
+    }
+
+    @Override
+    public String getIndicesValue() {
+        
+        return null;
+    }
+
+    @Override
+    public String getGainersValue() {
+        return null;
+    }
+
+    @Override
+    public String getLosersValue() {
+        return null;
     }
 
     @Override
@@ -61,7 +83,7 @@ public class MarketServiceImpl implements MarketService {
         return Double.parseDouble(String.format("%.2f", holdingYield));
     }
 
-    public String getChangeByName(String name){
+    public String getIndexByName(String name) {
         Map<String, String> nameMap = new HashMap<>();
         nameMap.put("DOW JONES", "%255EDJI");
         nameMap.put("S&P 500", "%255EGSPC");
@@ -77,8 +99,8 @@ public class MarketServiceImpl implements MarketService {
             e.printStackTrace();
         }
         JSONObject json = JSON.parseObject(response.getBody());
-        JSONObject price = json.getJSONObject("price");
-        return price.getJSONObject("regularMarketChangePercent").getString("fmt");
+        index = json.getJSONObject("price");
+        return index.getJSONObject("regularMarketChangePercent").getString("fmt");
     }
 
     public String getPriceBySymbol(String symbol){
@@ -96,6 +118,7 @@ public class MarketServiceImpl implements MarketService {
         return price.getJSONObject("regularMarketPrice").getString("fmt");
     }
 
+    @PostConstruct
     @Override
     public void initData() {
         Map<String, Double> yieldMap = new TreeMap<>();
