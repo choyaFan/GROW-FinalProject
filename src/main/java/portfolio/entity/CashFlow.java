@@ -1,28 +1,23 @@
 package portfolio.entity;
 
-import java.util.Map;
+import java.util.List;
 
 public class CashFlow {
-    private Map<String,Double> cashFlow;
+    private List<Cash> cashList;
     private double totalValue;
-
-    public CashFlow(Map<String, Double> cashFlow, double totalValue) {
-        this.cashFlow = cashFlow;
+    public CashFlow(List<Cash> cashList, double totalValue) {
+        this.cashList = cashList;
         this.totalValue = totalValue;
     }
-
-    public Map<String, Double> getCashFlow() {
-        return cashFlow;
+    public List<Cash> getCashList() {
+        return cashList;
     }
-
-    public void setCashFlow(Map<String, Double> cashFlow) {
-        this.cashFlow = cashFlow;
+    public void setCashList(List<Cash> cashList) {
+        this.cashList = cashList;
     }
-
     public double getTotalValue() {
         return totalValue;
     }
-
     public void setTotalValue(double totalValue) {
         this.totalValue = totalValue;
     }

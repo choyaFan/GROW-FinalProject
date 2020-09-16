@@ -1,6 +1,5 @@
 package portfolio.entity;
 
-import java.time.LocalDate;
 import java.util.Date;
 
 public abstract class NetWorth {
