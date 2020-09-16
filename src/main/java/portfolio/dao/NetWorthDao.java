@@ -5,10 +5,12 @@ import portfolio.entity.CashValue;
 import portfolio.entity.Investment;
 import portfolio.entity.InvestmentValue;
 
+import java.util.Date;
 import java.util.List;
 
 public interface NetWorthDao {
     List<Cash> getAllCash();
+    CashValue getCashByDate(Date date);
     List<Investment> getAllInvestments();
     List<CashValue> getCash_preWeek();
     List<CashValue> getCash_preMonth();
