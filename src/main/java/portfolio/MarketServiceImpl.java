@@ -82,7 +82,7 @@ public class MarketServiceImpl implements MarketService {
         try {
             response = Unirest.get("https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/get-detail?region=US&symbol=" + nameMap.get(name))
                     .header("x-rapidapi-host", "apidojo-yahoo-finance-v1.p.rapidapi.com")
-                    .header("x-rapidapi-key", "6d624fa3a5mshb585e5b08e906b4p11c6e4jsnd0528688de63")
+                    .header("x-rapidapi-key", "cdba932e57mshd1152bf1d71ceb7p1910c3jsn7fe067c2634b")
                     .asString();
         } catch (UnirestException e) {
             e.printStackTrace();
@@ -98,7 +98,7 @@ public class MarketServiceImpl implements MarketService {
         try {
             response = Unirest.get("https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-financials?region=US&symbol=" + symbol)
                     .header("x-rapidapi-host", "apidojo-yahoo-finance-v1.p.rapidapi.com")
-                    .header("x-rapidapi-key", "6d624fa3a5mshb585e5b08e906b4p11c6e4jsnd0528688de63")
+                    .header("x-rapidapi-key", "cdba932e57mshd1152bf1d71ceb7p1910c3jsn7fe067c2634b")
                     .asString();
         } catch (UnirestException e) {
             e.printStackTrace();
