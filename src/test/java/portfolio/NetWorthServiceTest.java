@@ -4,6 +4,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import portfolio.dao.NetWorthDao;
+import portfolio.entity.Cash;
+import portfolio.entity.CashFlow;
+import portfolio.entity.Investment;
+import portfolio.service.NetWorthService;
+import portfolio.service.NetWorthServiceImpl;
+
 import static org.mockito.Mockito.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

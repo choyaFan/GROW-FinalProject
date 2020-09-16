@@ -1,6 +1,10 @@
-package portfolio;
+package portfolio.dao;
 
-import java.util.Date;
+import portfolio.entity.Cash;
+import portfolio.entity.CashValue;
+import portfolio.entity.Investment;
+import portfolio.entity.InvestmentValue;
+
 import java.util.List;
 
 public interface NetWorthDao {

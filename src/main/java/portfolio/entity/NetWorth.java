@@ -1,4 +1,4 @@
-package portfolio;
+package portfolio.entity;
 
 import java.util.Date;
 
