@@ -1,13 +1,15 @@
-package portfolio;
+package portfolio.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import portfolio.dao.NetWorthDao;
+import portfolio.entity.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-public class NetWorthServiceImpl implements NetWorthService{
+public class NetWorthServiceImpl implements NetWorthService {
     @Autowired
     private final NetWorthDao netWorthDao;
     private final List<NetWorth> netWorthList = new ArrayList<>();

@@ -1,4 +1,6 @@
-package portfolio;
+package portfolio.service;
+
+import portfolio.entity.*;
 
 import java.util.Date;
 import java.util.List;

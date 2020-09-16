@@ -1,4 +1,4 @@
-package portfolio;
+package portfolio.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -7,6 +7,8 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import portfolio.entity.Investment;
+import portfolio.entity.NetWorth;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -16,7 +18,7 @@ public class MarketServiceImpl implements MarketService {
     private final NetWorthService worthService;
     Map<String, Double> sortedYieldMap = new LinkedHashMap<>();
     Map<String, Double> priceMap = new LinkedHashMap<>();
-    JSONObject index;
+    Map<String, String> index = new LinkedHashMap<>();
 
     @Autowired
     public MarketServiceImpl(NetWorthServiceImpl netWorthService) {
@@ -25,12 +27,11 @@ public class MarketServiceImpl implements MarketService {
 
     @Override
     public String getIndices() {
-        JSONObject indices = new JSONObject();
         getIndexByName("DOW JONES");
         getIndexByName("S&P 500");
         getIndexByName("NASDAQ");
         getIndexByName("SSE Composite Index");
-        return JSON.toJSONString(indices);
+        return JSON.toJSONString(index);
     }
 
     @Override
@@ -89,8 +90,8 @@ public class MarketServiceImpl implements MarketService {
         }
         JSONObject json = JSON.parseObject(response.getBody());
         JSONObject price = json.getJSONObject("price");
-        index.put("DOW JONES(PERCENT)",price.getJSONObject("regularMarketChangePercent").getString("fmt"));
-        index.put("DOW JONES(VALUE)",price.getJSONObject("regularMarketPrice").getString("fmt"));
+        index.put(name + "(PERCENT)",price.getJSONObject("regularMarketChangePercent").getString("fmt"));
+        index.put(name + "(VALUE)",price.getJSONObject("regularMarketPrice").getString("fmt"));
     }
 
     public String getPriceBySymbol(String symbol){
@@ -132,5 +133,6 @@ public class MarketServiceImpl implements MarketService {
         for(Map.Entry<String, Double> map : list) {
             sortedYieldMap.put(map.getKey(), map.getValue());
         }
+        System.out.println("Init market data success");
     }
 }

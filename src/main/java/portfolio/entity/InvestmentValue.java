@@ -1,4 +1,4 @@
-package portfolio;
+package portfolio.entity;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 

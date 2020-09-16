@@ -1,4 +1,4 @@
-package portfolio;
+package portfolio.dao;
 
 import com.mongodb.MongoException;
 import org.springframework.data.domain.Sort;
@@ -6,12 +6,17 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
+import portfolio.entity.Cash;
+import portfolio.entity.CashValue;
+import portfolio.entity.Investment;
+import portfolio.entity.InvestmentValue;
+
 import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.util.*;
 
 @Component
-public class NetWorthDaoImpl implements NetWorthDao{
+public class NetWorthDaoImpl implements NetWorthDao {
     @Resource
     MongoTemplate mongoTemplate;
 

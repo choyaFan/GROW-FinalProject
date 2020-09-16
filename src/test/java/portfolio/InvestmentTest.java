@@ -1,6 +1,7 @@
 package portfolio;
 
 import org.junit.jupiter.api.Test;
+import portfolio.entity.Investment;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
