@@ -3,18 +3,32 @@ package portfolio.entity;
 import java.util.List;
 
 public class CashFlow {
-    private List<Cash> cashList;
+    private List<Cash> positiveList;
+    private List<Cash> negativeList;
     private double totalValue;
-    public CashFlow(List<Cash> cashList, double totalValue) {
-        this.cashList = cashList;
+
+    public CashFlow(List<Cash> positiveList, List<Cash> negativeList, double totalValue) {
+        this.positiveList = positiveList;
+        this.negativeList = negativeList;
         this.totalValue = totalValue;
     }
-    public List<Cash> getCashList() {
-        return cashList;
+
+    public List<Cash> getPositiveList() {
+        return positiveList;
     }
-    public void setCashList(List<Cash> cashList) {
-        this.cashList = cashList;
+
+    public void setPositiveList(List<Cash> positiveList) {
+        this.positiveList = positiveList;
     }
+
+    public List<Cash> getNegativeList() {
+        return negativeList;
+    }
+
+    public void setNegativeList(List<Cash> negativeList) {
+        this.negativeList = negativeList;
+    }
+
     public double getTotalValue() {
         return totalValue;
     }

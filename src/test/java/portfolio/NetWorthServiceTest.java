@@ -10,9 +10,7 @@ import portfolio.entity.CashFlow;
 import portfolio.entity.Investment;
 import portfolio.service.NetWorthService;
 import portfolio.service.NetWorthServiceImpl;
-
 import static org.mockito.Mockito.*;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -96,15 +94,17 @@ public class NetWorthServiceTest {
     @Test
     public void test_getIncome(){
         CashFlow cf = service.getIncome(day8,day7);
-        List<Cash> cashList = cf.getCashList();
-        cashList.forEach(System.out::println);
+        List<Cash> positiveList = cf.getPositiveList();
+        positiveList.forEach(System.out::println);
+        List<Cash> negativeList = cf.getPositiveList();
+        negativeList.forEach(System.out::println);
         System.out.println("Total:" + cf.getTotalValue());
     }
 
     @Test
     public void test_getSpending(){
         CashFlow cf = service.getSpending(day8,day7);
-        List<Cash> cashList = cf.getCashList();
+        List<Cash> cashList = cf.getPositiveList();
         cashList.forEach(System.out::println);
         System.out.println("Total:" + cf.getTotalValue());
     }
