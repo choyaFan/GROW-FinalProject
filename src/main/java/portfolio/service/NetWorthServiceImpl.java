@@ -163,7 +163,16 @@ public class NetWorthServiceImpl implements NetWorthService {
         List<Cash> cashList = new ArrayList<>();
         cashFlow.keySet().forEach(p->cashList.add(new Cash(null,p,null,cashFlow.get(p),null)));
         double totalValue = cashFlow.values().stream().mapToDouble(value -> value).sum();
-        return new CashFlow(cashList,totalValue);
+        List<Cash> positive = new ArrayList<>();
+        List<Cash> negative = new ArrayList<>();
+        for(Cash cash:cashList){
+            if(cash.getValue()>=0){
+                positive.add(cash);
+            }else {
+                negative.add(cash);
+            }
+        }
+        return new CashFlow(positive,negative,totalValue);
     }
 
     @Override
@@ -182,7 +191,7 @@ public class NetWorthServiceImpl implements NetWorthService {
         List<Cash> cashList = new ArrayList<>();
         cashFlow.keySet().forEach(p->cashList.add(new Cash(null,p,null,cashFlow.get(p),null)));
         double totalValue = cashFlow.values().stream().mapToDouble(value -> value).sum();
-        return new CashFlow(cashList,totalValue);
+        return new CashFlow(cashList,null,totalValue);
     }
     @Override
     public List<NetWorth> getNetWorthList() {
