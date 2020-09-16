@@ -96,16 +96,16 @@ public class NetWorthServiceTest {
     @Test
     public void test_getIncome(){
         CashFlow cf = service.getIncome(day8,day7);
-        Map<String,Double> cashMap = cf.getCashFlow();
-        cashMap.keySet().forEach(p->System.out.println(p+":"+cashMap.get(p)));
+        List<Cash> cashList = cf.getCashList();
+        cashList.forEach(System.out::println);
         System.out.println("Total:" + cf.getTotalValue());
     }
 
     @Test
     public void test_getSpending(){
         CashFlow cf = service.getSpending(day8,day7);
-        Map<String,Double> cashMap = cf.getCashFlow();
-        cashMap.keySet().forEach(p->System.out.println(p+":"+cashMap.get(p)));
+        List<Cash> cashList = cf.getCashList();
+        cashList.forEach(System.out::println);
         System.out.println("Total:" + cf.getTotalValue());
     }
 }

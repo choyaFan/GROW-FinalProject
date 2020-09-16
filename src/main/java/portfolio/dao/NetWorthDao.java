@@ -5,6 +5,7 @@ import portfolio.entity.CashValue;
 import portfolio.entity.Investment;
 import portfolio.entity.InvestmentValue;
 
+import java.util.Date;
 import java.util.List;
 
 public interface NetWorthDao {
