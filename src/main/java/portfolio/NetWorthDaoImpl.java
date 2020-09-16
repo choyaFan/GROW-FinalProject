@@ -39,6 +39,11 @@ public class NetWorthDaoImpl implements NetWorthDao{
     }
 
     @Override
+    public CashValue getCashByDate(Date date) {
+        return mongoTemplate.findOne(new Query(Criteria.where("created").is(date)),CashValue.class);
+    }
+
+    @Override
     public List<Investment> getAllInvestments() {
         try{
             LocalDate end = LocalDate.now();

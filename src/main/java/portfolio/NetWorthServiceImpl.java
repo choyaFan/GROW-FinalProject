@@ -152,6 +152,11 @@ public class NetWorthServiceImpl implements NetWorthService{
                 .filter(netWorth -> !netWorth.getCreated().after(end) && !netWorth.getCreated().before(start))
                 .map(netWorth -> (Investment) netWorth)
                 .collect(Collectors.groupingBy(Investment::getType,Collectors.summingDouble(Investment::getIncome)));
+        CashValue startValue = netWorthDao.getCashByDate(start);
+        CashValue endValue = netWorthDao.getCashByDate(end);
+        if(startValue!=null&&endValue!=null){
+            cashFlow.put("cash",endValue.getValue()-startValue.getValue());
+        }
         double totalValue = cashFlow.values().stream().mapToDouble(value -> value).sum();
         return new CashFlow(cashFlow,totalValue);
     }
@@ -164,6 +169,11 @@ public class NetWorthServiceImpl implements NetWorthService{
                 .filter(netWorth -> !netWorth.getCreated().after(end) && !netWorth.getCreated().before(start))
                 .map(netWorth -> (Investment) netWorth)
                 .collect(Collectors.groupingBy(Investment::getType,Collectors.summingDouble(Investment::getSpending)));
+        CashValue startValue = netWorthDao.getCashByDate(start);
+        CashValue endValue = netWorthDao.getCashByDate(end);
+        if(startValue!=null&&endValue!=null){
+            cashFlow.put("cash",startValue.getValue()-endValue.getValue());
+        }
         double totalValue = cashFlow.values().stream().mapToDouble(value -> value).sum();
         return new CashFlow(cashFlow,totalValue);
     }

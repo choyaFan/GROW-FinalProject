@@ -2,10 +2,10 @@ package portfolio;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public interface NetWorthDao {
     List<Cash> getAllCash();
+    CashValue getCashByDate(Date date);
     List<Investment> getAllInvestments();
     List<CashValue> getCash_preWeek();
     List<CashValue> getCash_preMonth();
