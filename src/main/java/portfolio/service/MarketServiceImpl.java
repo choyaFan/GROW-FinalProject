@@ -1,11 +1,13 @@
 package portfolio.service;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import portfolio.entity.Investment;
 import portfolio.entity.NetWorth;
@@ -18,13 +20,14 @@ public class MarketServiceImpl implements MarketService {
     private final NetWorthService worthService;
     Map<String, Double> sortedYieldMap = new LinkedHashMap<>();
     Map<String, Double> priceMap = new LinkedHashMap<>();
-    Map<String, String> index = new LinkedHashMap<>();
+    JSONArray index = new JSONArray();
 
     @Autowired
     public MarketServiceImpl(NetWorthServiceImpl netWorthService) {
         this.worthService = netWorthService;
     }
 
+    @Cacheable(cacheNames = {"index"})
     @Override
     public String getIndices() {
         getIndexByName("DOW JONES");
@@ -36,29 +39,40 @@ public class MarketServiceImpl implements MarketService {
 
     @Override
     public String getGainers() {
-        Map<String, Double> gainerMap = new LinkedHashMap<>();
+        JSONArray json = new JSONArray();
+        int count = 0;
         for(String name : sortedYieldMap.keySet()){
-            if(sortedYieldMap.get(name) >= 0 && gainerMap.size() <= 10){
-                gainerMap.put(name + "(Percent)", sortedYieldMap.get(name));
-                gainerMap.put(name + "(Value)", priceMap.get(name));
+            if(sortedYieldMap.get(name) >= 0 && count < 5){
+                JSONObject temp = new JSONObject();
+                count++;
+                temp.put("name", name);
+                temp.put("percent", sortedYieldMap.get(name));
+                temp.put("value", priceMap.get(name));
+                json.add(temp);
             }
             else break;
         }
-        System.out.println(gainerMap);
-        return JSON.toJSONString(gainerMap);
+        System.out.println(json);
+        return JSON.toJSONString(json);
     }
 
     @Override
     public String getLosers() {
-        Map<String, Double> loserMap = new LinkedHashMap<>();
+        JSONArray json = new JSONArray();
+//        Map<String, Double> loserMap = new LinkedHashMap<>();
+        int count = 0;
         for(String name : sortedYieldMap.keySet()){
-            if(sortedYieldMap.get(name) <= 0 && loserMap.size() < 10){
-                loserMap.put(name + "(Percent)", sortedYieldMap.get(name));
-                loserMap.put(name + "(Value)", priceMap.get(name));
+            if(sortedYieldMap.get(name) < 0 && count < 5){
+                JSONObject temp = new JSONObject();
+                count++;
+                temp.put("name", name);
+                temp.put("percent", sortedYieldMap.get(name));
+                temp.put("value", priceMap.get(name));
+                json.add(temp);
             }
         }
-        System.out.println(loserMap);
-        return JSON.toJSONString(loserMap);
+        System.out.println(json);
+        return JSON.toJSONString(json);
     }
 
     @Override
@@ -75,6 +89,7 @@ public class MarketServiceImpl implements MarketService {
 
     public void getIndexByName(String name) {
         Map<String, String> nameMap = new HashMap<>();
+        JSONObject temp = new JSONObject();
         nameMap.put("DOW JONES", "%255EDJI");
         nameMap.put("S&P 500", "%255EGSPC");
         nameMap.put("NASDAQ", "%255EIXIC");
@@ -90,8 +105,10 @@ public class MarketServiceImpl implements MarketService {
         }
         JSONObject json = JSON.parseObject(response.getBody());
         JSONObject price = json.getJSONObject("price");
-        index.put(name + "(PERCENT)",price.getJSONObject("regularMarketChangePercent").getString("fmt"));
-        index.put(name + "(VALUE)",price.getJSONObject("regularMarketPrice").getString("fmt"));
+        temp.put("name", name);
+        temp.put("percent",price.getJSONObject("regularMarketChangePercent").getString("fmt"));
+        temp.put("value",price.getJSONObject("regularMarketPrice").getString("fmt"));
+        index.add(temp);
     }
 
     public String getPriceBySymbol(String symbol){

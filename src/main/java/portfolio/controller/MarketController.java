@@ -16,17 +16,17 @@ public class MarketController {
         this.service = service;
     }
 
-    @GetMapping("/getIndexPercent")
+    @GetMapping("/getIndex")
     public String getIndexPercent(){
         return service.getIndices();
     }
 
-    @GetMapping("/getGainerPercent")
+    @GetMapping("/getGainer")
     public String getGainerPercent(){
         return service.getGainers();
     }
 
-    @GetMapping("/getLoserPercent")
+    @GetMapping("/getLoser")
     public String getLoserPercent(){
         return service.getLosers();
     }
