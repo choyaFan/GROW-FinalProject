@@ -5,53 +5,55 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.async.Callback;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Service;
 import portfolio.entity.Investment;
 import portfolio.entity.NetWorth;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.concurrent.Future;
 
 @Service
 @EnableScheduling
 public class MarketServiceImpl implements MarketService {
-    Map<String, Double> DEFAULT_YIELD = new LinkedHashMap<>(){
-        {
-            put("Cadence", 7.77);
-            put("Ares", 7.38);
-            put("Diageo plc", 7.19);
-            put("NexPoint", -0.62);
-            put("Itau", -0.59);
-            put("Silicon", -0.32);
-            put("Valley", -0.27);
-            put("Echo", -0.17);
-            put("Guggenheim", -0.16);
-            put("Vanda", -0.11);
-        }
-    };
-    Map<String, Double> DEFAULT_PRICE = new LinkedHashMap<>(){
-        {
-            put("Valley", 7.2);
-            put("Ares", 40.17);
-            put("Diageo plc", 136.59);
-            put("Vanda", 9.63);
-            put("Itau", 4.68);
-            put("Silicon", 36.61);
-            put("NexPoint", 9.23);
-            put("Cadence", 105.23);
-            put("Echo", 26.75);
-            put("Guggenheim", 18.22);
-        }
-    };
+    private static final Map<String, Double> DEFAULT_YIELD;
+    private static final Map<String, Double> DEFAULT_PRICE;
+    static {
+            DEFAULT_YIELD = new LinkedHashMap<>();
+            DEFAULT_YIELD.put("Cadence", 7.77);
+            DEFAULT_YIELD.put("Ares", 7.38);
+            DEFAULT_YIELD.put("Diageo plc", 7.19);
+            DEFAULT_YIELD.put("NexPoint", -0.62);
+            DEFAULT_YIELD.put("Itau", -0.59);
+            DEFAULT_YIELD.put("Silicon", -0.32);
+            DEFAULT_YIELD.put("Valley", -0.27);
+            DEFAULT_YIELD.put("Echo", -0.17);
+            DEFAULT_YIELD.put("Guggenheim", -0.16);
+            DEFAULT_YIELD.put("Vanda", -0.11);
+            DEFAULT_PRICE = new LinkedHashMap<>();
+            DEFAULT_PRICE.put("Valley", 7.2);
+            DEFAULT_PRICE.put("Ares", 40.17);
+            DEFAULT_PRICE.put("Diageo plc", 136.59);
+            DEFAULT_PRICE.put("Vanda", 9.63);
+            DEFAULT_PRICE.put("Itau", 4.68);
+            DEFAULT_PRICE.put("Silicon", 36.61);
+            DEFAULT_PRICE.put("NexPoint", 9.23);
+            DEFAULT_PRICE.put("Cadence", 105.23);
+            DEFAULT_PRICE.put("Echo", 26.75);
+            DEFAULT_PRICE.put("Guggenheim", 18.22);
+    }
 
     private final NetWorthService worthService;
     Map<String, Double> sortedYieldMap = DEFAULT_YIELD;
     Map<String, Double> priceMap = DEFAULT_PRICE;
+    JSONArray indexArray = new JSONArray();
 
     @Autowired
     public MarketServiceImpl(NetWorthServiceImpl netWorthService) {
@@ -60,11 +62,21 @@ public class MarketServiceImpl implements MarketService {
 
     @Override
     public String getIndices() {
-        JSONArray indexArray = new JSONArray();
-        indexArray.add(getIndexByName("DOW JONES"));
-        indexArray.add(getIndexByName("S&P 500"));
-        indexArray.add(getIndexByName("NASDAQ"));
-        indexArray.add(getIndexByName("SSE Composite Index"));
+
+//        indexArray.add(getIndexByName("DOW JONES"));
+//        indexArray.add(getIndexByName("S&P 500"));
+//        indexArray.add(getIndexByName("NASDAQ"));
+//        indexArray.add(getIndexByName("SSE Composite Index"));
+        indexArray = new JSONArray();
+        getIndexAsync("DOW JONES");
+        getIndexAsync("S&P 500");
+        getIndexAsync("NASDAQ");
+        getIndexAsync("SSE Composite Index");
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return JSON.toJSONString(indexArray);
     }
 
@@ -126,7 +138,7 @@ public class MarketServiceImpl implements MarketService {
         try {
             response = Unirest.get("https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/get-detail?region=US&symbol=" + nameMap.get(name))
                     .header("x-rapidapi-host", "apidojo-yahoo-finance-v1.p.rapidapi.com")
-                    .header("x-rapidapi-key", "7d74e11133msh9115d26e2930f03p1ba38fjsn5065c1dc1f0f")
+                    .header("x-rapidapi-key", "7a100b668fmshc6247907baeb4c1p11569djsn91d0316395f8")
                     .asString();
         } catch (UnirestException e) {
             e.printStackTrace();
@@ -144,7 +156,7 @@ public class MarketServiceImpl implements MarketService {
         try {
             response = Unirest.get("https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-financials?region=US&symbol=" + symbol)
                     .header("x-rapidapi-host", "apidojo-yahoo-finance-v1.p.rapidapi.com")
-                    .header("x-rapidapi-key", "7d74e11133msh9115d26e2930f03p1ba38fjsn5065c1dc1f0f")
+                    .header("x-rapidapi-key", "7a100b668fmshc6247907baeb4c1p11569djsn91d0316395f8")
                     .asString();
         } catch (UnirestException e) {
             e.printStackTrace();
@@ -180,5 +192,38 @@ public class MarketServiceImpl implements MarketService {
             sortedYieldMap.put(map.getKey(), map.getValue());
         }
         System.out.println("Init market data success");
+    }
+
+    private void getIndexAsync(String index){
+        JSONObject indexJson = new JSONObject();
+        Map<String, String> nameMap = new HashMap<>();
+        nameMap.put("DOW JONES", "%255EDJI");
+        nameMap.put("S&P 500", "%255EGSPC");
+        nameMap.put("NASDAQ", "%255EIXIC");
+        nameMap.put("SSE Composite Index", "000001.SS");
+        Future<HttpResponse<String>> future = Unirest.get("https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-financials?region=US&symbol=" + nameMap.get(index))
+                .header("x-rapidapi-host", "apidojo-yahoo-finance-v1.p.rapidapi.com")
+                .header("x-rapidapi-key", "7a100b668fmshc6247907baeb4c1p11569djsn91d0316395f8")
+                .asStringAsync(new Callback<String>() {
+                    @Override
+                    public void completed(HttpResponse<String> httpResponse) {
+                        JSONObject json = JSON.parseObject(httpResponse.getBody());
+                        JSONObject price = json.getJSONObject("price");
+                        indexJson.put("name", index);
+                        indexJson.put("percent",price.getJSONObject("regularMarketChangePercent").getString("fmt"));
+                        indexJson.put("value",price.getJSONObject("regularMarketPrice").getString("fmt"));
+                    }
+
+                    @Override
+                    public void failed(UnirestException e) {
+                        System.err.println("request failed");
+                    }
+
+                    @Override
+                    public void cancelled() {
+                        System.err.println("request cancelled");
+                    }
+                });
+        indexArray.add(indexJson);
     }
 }
