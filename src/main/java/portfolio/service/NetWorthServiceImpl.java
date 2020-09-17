@@ -155,11 +155,6 @@ public class NetWorthServiceImpl implements NetWorthService {
                 .filter(netWorth -> !netWorth.getCreated().after(end) && !netWorth.getCreated().before(start))
                 .map(netWorth -> (Investment) netWorth)
                 .collect(Collectors.groupingBy(Investment::getType,Collectors.summingDouble(Investment::getIncome)));
-        CashValue startValue = netWorthDao.getCashByDate(start);
-        CashValue endValue = netWorthDao.getCashByDate(end);
-        if(startValue!=null&&endValue!=null){
-            cashFlow.put("cash",endValue.getValue()-startValue.getValue());
-        }
         List<Cash> cashList = new ArrayList<>();
         cashFlow.keySet().forEach(p->cashList.add(new Cash(null,p,null,cashFlow.get(p),null)));
         double totalValue = cashFlow.values().stream().mapToDouble(value -> value).sum();

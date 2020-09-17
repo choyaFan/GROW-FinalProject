@@ -1,10 +1,13 @@
 package portfolio.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.util.Date;
 
 public abstract class NetWorth {
     String ID;
     String name;
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
     Date created;
     double value;
     String type;

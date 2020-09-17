@@ -1,11 +1,13 @@
 package portfolio.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 
 @Document(collection = "netWorthValue")
 public class NetWorthValue {
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone="GMT+8")
     LocalDate created;
     double value;
 
