@@ -8,6 +8,8 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import portfolio.entity.Investment;
 import portfolio.entity.NetWorth;
@@ -16,25 +18,54 @@ import javax.annotation.PostConstruct;
 import java.util.*;
 
 @Service
+@EnableScheduling
 public class MarketServiceImpl implements MarketService {
+    Map<String, Double> DEFAULT_YIELD = new LinkedHashMap<>(){
+        {
+            put("Cadence", 7.77);
+            put("Ares", 7.38);
+            put("Diageo plc", 7.19);
+            put("NexPoint", -0.62);
+            put("Itau", -0.59);
+            put("Silicon", -0.32);
+            put("Valley", -0.27);
+            put("Echo", -0.17);
+            put("Guggenheim", -0.16);
+            put("Vanda", -0.11);
+        }
+    };
+    Map<String, Double> DEFAULT_PRICE = new LinkedHashMap<>(){
+        {
+            put("Valley", 7.2);
+            put("Ares", 40.17);
+            put("Diageo plc", 136.59);
+            put("Vanda", 9.63);
+            put("Itau", 4.68);
+            put("Silicon", 36.61);
+            put("NexPoint", 9.23);
+            put("Cadence", 105.23);
+            put("Echo", 26.75);
+            put("Guggenheim", 18.22);
+        }
+    };
+
     private final NetWorthService worthService;
-    Map<String, Double> sortedYieldMap = new LinkedHashMap<>();
-    Map<String, Double> priceMap = new LinkedHashMap<>();
-    JSONArray index = new JSONArray();
+    Map<String, Double> sortedYieldMap = DEFAULT_YIELD;
+    Map<String, Double> priceMap = DEFAULT_PRICE;
 
     @Autowired
     public MarketServiceImpl(NetWorthServiceImpl netWorthService) {
         this.worthService = netWorthService;
     }
 
-    @Cacheable(cacheNames = {"index"})
     @Override
     public String getIndices() {
-        getIndexByName("DOW JONES");
-        getIndexByName("S&P 500");
-        getIndexByName("NASDAQ");
-        getIndexByName("SSE Composite Index");
-        return JSON.toJSONString(index);
+        JSONArray indexArray = new JSONArray();
+        indexArray.add(getIndexByName("DOW JONES"));
+        indexArray.add(getIndexByName("S&P 500"));
+        indexArray.add(getIndexByName("NASDAQ"));
+        indexArray.add(getIndexByName("SSE Composite Index"));
+        return JSON.toJSONString(indexArray);
     }
 
     @Override
@@ -52,14 +83,12 @@ public class MarketServiceImpl implements MarketService {
             }
             else break;
         }
-        System.out.println(json);
         return JSON.toJSONString(json);
     }
 
     @Override
     public String getLosers() {
         JSONArray json = new JSONArray();
-//        Map<String, Double> loserMap = new LinkedHashMap<>();
         int count = 0;
         for(String name : sortedYieldMap.keySet()){
             if(sortedYieldMap.get(name) < 0 && count < 5){
@@ -71,7 +100,6 @@ public class MarketServiceImpl implements MarketService {
                 json.add(temp);
             }
         }
-        System.out.println(json);
         return JSON.toJSONString(json);
     }
 
@@ -87,9 +115,9 @@ public class MarketServiceImpl implements MarketService {
         return Double.parseDouble(String.format("%.2f", holdingYield));
     }
 
-    public void getIndexByName(String name) {
+    public JSONObject getIndexByName(String name) {
         Map<String, String> nameMap = new HashMap<>();
-        JSONObject temp = new JSONObject();
+        JSONObject indexJson = new JSONObject();
         nameMap.put("DOW JONES", "%255EDJI");
         nameMap.put("S&P 500", "%255EGSPC");
         nameMap.put("NASDAQ", "%255EIXIC");
@@ -98,17 +126,17 @@ public class MarketServiceImpl implements MarketService {
         try {
             response = Unirest.get("https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/get-detail?region=US&symbol=" + nameMap.get(name))
                     .header("x-rapidapi-host", "apidojo-yahoo-finance-v1.p.rapidapi.com")
-                    .header("x-rapidapi-key", "cdba932e57mshd1152bf1d71ceb7p1910c3jsn7fe067c2634b")
+                    .header("x-rapidapi-key", "7d74e11133msh9115d26e2930f03p1ba38fjsn5065c1dc1f0f")
                     .asString();
         } catch (UnirestException e) {
             e.printStackTrace();
         }
         JSONObject json = JSON.parseObject(response.getBody());
         JSONObject price = json.getJSONObject("price");
-        temp.put("name", name);
-        temp.put("percent",price.getJSONObject("regularMarketChangePercent").getString("fmt"));
-        temp.put("value",price.getJSONObject("regularMarketPrice").getString("fmt"));
-        index.add(temp);
+        indexJson.put("name", name);
+        indexJson.put("percent",price.getJSONObject("regularMarketChangePercent").getString("fmt"));
+        indexJson.put("value",price.getJSONObject("regularMarketPrice").getString("fmt"));
+        return indexJson;
     }
 
     public String getPriceBySymbol(String symbol){
@@ -116,7 +144,7 @@ public class MarketServiceImpl implements MarketService {
         try {
             response = Unirest.get("https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-financials?region=US&symbol=" + symbol)
                     .header("x-rapidapi-host", "apidojo-yahoo-finance-v1.p.rapidapi.com")
-                    .header("x-rapidapi-key", "cdba932e57mshd1152bf1d71ceb7p1910c3jsn7fe067c2634b")
+                    .header("x-rapidapi-key", "7d74e11133msh9115d26e2930f03p1ba38fjsn5065c1dc1f0f")
                     .asString();
         } catch (UnirestException e) {
             e.printStackTrace();
@@ -126,9 +154,10 @@ public class MarketServiceImpl implements MarketService {
         return price.getJSONObject("regularMarketPrice").getString("fmt");
     }
 
-    @PostConstruct
+    @Scheduled(cron = "0 33 9 * * ?")
     @Override
     public void initData() {
+        System.out.println("Preparing market data...");
         Map<String, Double> yieldMap = new TreeMap<>();
         for(NetWorth netWorth : worthService.getNetWorthList()){
             if(netWorth instanceof Investment){
