@@ -664,43 +664,44 @@
                         <h6 class="m-0 font-weight-bold text-primary">
                           Performance
                         </h6>
-                        <div>
-                          <a
-                            class="btn btn-info btn-sm btn-icon-split"
-                            onclick="getIncomePiePositive(0)"
-                          >
-                            <span class="text">W</span>
-                          </a>
-                          <a
-                            class="btn btn-info btn-sm btn-icon-split"
-                            onclick="getIncomePiePositive(1)"
-                          >
-                            <span class="text">M</span>
-                          </a>
-                          <a
-                            class="btn btn-info btn-sm btn-icon-split"
-                            onclick="getIncomePiePositive(2)"
-                          >
-                            <span class="text">Q</span>
-                          </a>
-                          <a
-                            class="btn btn-info btn-sm btn-icon-split"
-                            onclick="getIncomePiePositive(3)"
-                          >
-                            <span class="text">Y</span>
-                          </a>
-                          <a class="btn btn-light btn-icon-split">
+                        <a class="btn btn-light btn-icon-split">
                             <span class="text" id="totalIncome"
                               >Total Income:
                             </span>
                           </a>
-                        </div>
                       </div>
                       <!-- Card Body -->
                       <div class="card-body">
+                        <div class="right">
+                            <a
+                              class="btn btn-info btn-sm btn-icon-split"
+                              onclick="getIncomePiePositive(0)"
+                            >
+                              <span class="text">W</span>
+                            </a>
+                            <a
+                              class="btn btn-info btn-sm btn-icon-split"
+                              onclick="getIncomePiePositive(1)"
+                            >
+                              <span class="text">M</span>
+                            </a>
+                            <a
+                              class="btn btn-info btn-sm btn-icon-split"
+                              onclick="getIncomePiePositive(2)"
+                            >
+                              <span class="text">Q</span>
+                            </a>
+                            <a
+                              class="btn btn-info btn-sm btn-icon-split"
+                              onclick="getIncomePiePositive(3)"
+                            >
+                              <span class="text">Y</span>
+                            </a>
+                            
+                          </div>
                         <div
                           id="incomePiePositive"
-                          style="width: auto; height: 200px"
+                          style="width: auto; height: 200px;margin-top: 30px;"
                         >
                           <script
                             src="../js/pieChart.js"
@@ -732,32 +733,7 @@
                         <h6 class="m-0 font-weight-bold text-primary">
                           Spending
                         </h6>
-                        <div>
-                          <a
-                            class="btn btn-info btn-sm btn-icon-split"
-                            onclick="getSpendingPie(0)"
-                          >
-                            <span class="text">W</span>
-                          </a>
-                          <a
-                            class="btn btn-info btn-sm btn-icon-split"
-                            onclick="getSpendingPie(1)"
-                          >
-                            <span class="text">M</span>
-                          </a>
-                          <a
-                            class="btn btn-info btn-sm btn-icon-split"
-                            onclick="getSpendingPie(2)"
-                          >
-                            <span class="text">Q</span>
-                          </a>
-                          <a
-                            class="btn btn-info btn-sm btn-icon-split"
-                            onclick="getSpendingPie(3)"
-                          >
-                            <span class="text">Y</span>
-                          </a>
-                        </div>
+                    
                         <a class="btn btn-light btn-icon-split">
                           <span class="text" id="totalSpending"
                             >Total Spending:
@@ -766,9 +742,35 @@
                       </div>
                       <!-- Card Body -->
                       <div class="card-body">
+                        <div class="right">
+                            <a
+                              class="btn btn-info btn-sm btn-icon-split"
+                              onclick="getSpendingPie(0)"
+                            >
+                              <span class="text">W</span>
+                            </a>
+                            <a
+                              class="btn btn-info btn-sm btn-icon-split"
+                              onclick="getSpendingPie(1)"
+                            >
+                              <span class="text">M</span>
+                            </a>
+                            <a
+                              class="btn btn-info btn-sm btn-icon-split"
+                              onclick="getSpendingPie(2)"
+                            >
+                              <span class="text">Q</span>
+                            </a>
+                            <a
+                              class="btn btn-info btn-sm btn-icon-split"
+                              onclick="getSpendingPie(3)"
+                            >
+                              <span class="text">Y</span>
+                            </a>
+                          </div>
                         <div
                           id="spendingPie"
-                          style="width: auto; height: 400px"
+                          style="width: auto; height: 400px;margin-top: 30px;"
                         >
                           <script type="text/javascript">
                             getSpendingPie(0);
@@ -790,7 +792,7 @@
                       Market Movers
                     </h6>
 
-                    <div style="alignment: right">
+                    <div>
                       <a
                         class="btn btn-info btn-sm btn-icon-split"
                         onclick="changeToPercent()"
