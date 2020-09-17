@@ -21,19 +21,19 @@ public class MarketController {
 
     @GetMapping("/getIndex")
     @ApiOperation("Get Indices.")
-    public String getIndexPercent(){
+    public String getIndex(){
         return service.getIndices();
     }
 
     @GetMapping("/getGainer")
     @ApiOperation("Get Top 5 Gainers.")
-    public String getGainerPercent(){
+    public String getGainer(){
         return service.getGainers();
     }
 
     @GetMapping("/getLoser")
     @ApiOperation("Get Top 5 Losers.")
-    public String getLoserPercent(){
+    public String getLoser(){
         return service.getLosers();
     }
 
