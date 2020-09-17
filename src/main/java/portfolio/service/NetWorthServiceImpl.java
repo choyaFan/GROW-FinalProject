@@ -186,7 +186,9 @@ public class NetWorthServiceImpl implements NetWorthService {
         CashValue startValue = netWorthDao.getCashByDate(start);
         CashValue endValue = netWorthDao.getCashByDate(end);
         if(startValue!=null&&endValue!=null){
-            cashFlow.put("cash",startValue.getValue()-endValue.getValue());
+            if(startValue.getValue()>endValue.getValue()){
+                cashFlow.put("cash",startValue.getValue()-endValue.getValue());
+            }
         }
         List<Cash> cashList = new ArrayList<>();
         cashFlow.keySet().forEach(p->cashList.add(new Cash(null,p,null,cashFlow.get(p),null)));
