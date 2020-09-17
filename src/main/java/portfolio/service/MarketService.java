@@ -1,6 +1,5 @@
 package portfolio.service;
 
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 public interface MarketService {
     String getIndices();

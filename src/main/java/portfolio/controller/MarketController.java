@@ -15,7 +15,7 @@ import portfolio.service.MarketServiceImpl;
 public class MarketController {
     private final MarketService service;
     @Autowired
-    public MarketController(MarketServiceImpl service){
+    public MarketController(MarketService service){
         this.service = service;
     }
 
