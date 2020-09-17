@@ -92,7 +92,7 @@ $.ajax({
         "<td>" +
         loser[i].name +
         "</td>" +
-        '<td style="color: red">' +
+        '<td style="color: red">' 
         +"-" +
         loser[i].value +
         "</td>" +
