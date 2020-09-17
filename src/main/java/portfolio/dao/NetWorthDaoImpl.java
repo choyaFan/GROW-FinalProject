@@ -23,10 +23,7 @@ public class NetWorthDaoImpl implements NetWorthDao {
     public void init(){
         LocalDate end = LocalDate.now().plusDays(2);
         List<CashValue> cashValueList = new ArrayList<>();
-        List<InvestmentValue> investmentValueList = new ArrayList<>();
-        investmentValueList.add(new InvestmentValue(end.plusDays(3),36147));
         cashValueList.add(new CashValue(end.plusDays(3),20488));
-        mongoTemplate.insert(investmentValueList,InvestmentValue.class);
         mongoTemplate.insert(cashValueList,CashValue.class);
 
     }
