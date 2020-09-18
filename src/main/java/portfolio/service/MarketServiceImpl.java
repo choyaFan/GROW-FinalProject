@@ -156,7 +156,7 @@ public class MarketServiceImpl implements MarketService {
         nameMap.put("SSE Composite Index", "000001.SS");
         CompletableFuture<HttpResponse<String>> future = Unirest.get("https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-financials?region=US&symbol=" + nameMap.get(index))
                 .header("x-rapidapi-host", "apidojo-yahoo-finance-v1.p.rapidapi.com")
-                .header("x-rapidapi-key", "7a100b668fmshc6247907baeb4c1p11569djsn91d0316395f8")
+                .header("x-rapidapi-key", "25b336c8eemsh052a9738d7af01ap1bc33djsn19f73413a9ff")
                 .asStringAsync(response -> {
                     JSONObject jsonObject = JSON.parseObject(response.getBody());
                     JSONObject price = jsonObject.getJSONObject("price");
