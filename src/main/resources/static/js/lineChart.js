@@ -20,7 +20,7 @@ function getValuePerWeek() {
       var cash = result;
       for (var $i = 0; $i < cash.length; $i++) {
         date[$i] = cash[$i].created;
-        netWorthValue[$i] = cash[$i].value;
+        netWorthValue[$i] = cash[$i].value.toFixed(2);
         drawLineChart();
       }
     },
@@ -35,7 +35,7 @@ function getValuePerMonth() {
         param = "http://localhost:8080/getNetWorth_preMonth";
       } else if (i == 1) {
         param = "http://localhost:8080/getCash_preMonth";
-      } else {
+      } else if(i==2){
         param = "http://localhost:8080/getInvestment_preMonth";
       }
   $.ajax({
@@ -47,7 +47,7 @@ function getValuePerMonth() {
       var cash = result;
       for (var $i = 0; $i < cash.length; $i++) {
         date[$i] = cash[$i].created;
-        netWorthValue[$i] = cash[$i].value;
+        netWorthValue[$i] = cash[$i].value.toFixed(2);
         drawLineChart();
       }
     },
@@ -62,7 +62,7 @@ function getValuePerQuarter() {
         param = "http://localhost:8080/getNetWorth_preQuarter";
       } else if (i == 1) {
         param = "http://localhost:8080/getCash_preQuarter";
-      } else {
+      } else if(i==2){
         param = "http://localhost:8080/getInvestment_preQuarter";
       }
   $.ajax({
@@ -74,7 +74,7 @@ function getValuePerQuarter() {
       var cash = result;
       for (var $i = 0; $i < cash.length; $i++) {
         date[$i] = cash[$i].created;
-        netWorthValue[$i] = cash[$i].value;
+        netWorthValue[$i] = cash[$i].value.toFixed(2);
         drawLineChart();
       }
     },
@@ -89,7 +89,7 @@ function getValuePerYear() {
         param = "http://localhost:8080/getNetWorth_preYear";
       } else if (i == 1) {
         param = "http://localhost:8080/getCash_preYear";
-      } else {
+      } else if(i==2){
         param = "http://localhost:8080/getInvestment_preYear";
       }
   $.ajax({
@@ -113,20 +113,20 @@ function getValuePerYear() {
 
 function changeToNetWorth() {
   document.getElementById("title").innerText = "Net Worth";
-  getValuePerWeek("http://localhost:8080/getNetWorth_preWeek");
-  i = 0;
+  i=0;
+  getValuePerWeek();
 }
 
 function changeToCash() {
   document.getElementById("title").innerText = "Cash";
-  getValuePerWeek("http://localhost:8080/getCash_preWeek");
-  i = 1;
+  i=1;
+  getValuePerWeek();
 }
 
 function changeToInvestment() {
   document.getElementById("title").innerText = "Investment";
-  getValuePerWeek("http://localhost:8080/getInvestment_preWeek");
   i = 2;
+  getValuePerWeek();
 }
 
 function drawLineChart() {
@@ -136,8 +136,7 @@ function drawLineChart() {
   option = null;
   option = {
     tooltip: {
-      trigger: "axis",
-      formatter: "{b}:{d}",
+      formatter: "{b}\n{c}",
     },
     xAxis: {
       type: "category",
@@ -146,18 +145,12 @@ function drawLineChart() {
     yAxis: {
       type: "value",
     },
-    emphasis: {
-      label: {
-        show: true,
-        fontSize: "30",
-        fontWeight: "bold",
-      },
-    },
     series: [
       {
         data: netWorthValue,
         type: "line",
         smooth: true,
+        // itemStyle:{normal:{label:{show:true}}}
       },
     ],
   };
