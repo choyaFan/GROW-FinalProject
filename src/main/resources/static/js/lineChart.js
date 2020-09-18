@@ -135,12 +135,23 @@ function drawLineChart() {
   var app = {};
   option = null;
   option = {
+    tooltip: {
+      trigger: "axis",
+      formatter: "{b}:{d}",
+    },
     xAxis: {
       type: "category",
       data: date,
     },
     yAxis: {
       type: "value",
+    },
+    emphasis: {
+      label: {
+        show: true,
+        fontSize: "30",
+        fontWeight: "bold",
+      },
     },
     series: [
       {
