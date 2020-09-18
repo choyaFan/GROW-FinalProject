@@ -65,12 +65,12 @@ function getIncomePiePositive(n) {
       for (var i = 0; i < list.length; i++) {
         var map = {};
         map["name"] = list[i].name;
-        map["value"] = list[i].value;
+        map["value"] = list[i].value.toFixed(2);
         incomeData.push(map);
         incomeName[i] = list[i].name;
       }
       document.getElementById("totalIncome").innerText =
-        "Total Income: " + totalIncome.toFixed(2);
+        "Total: " + totalIncome.toFixed(2);
       //$("#totalIncome").append(totalIncome);
     },
     error: function () {
@@ -144,7 +144,7 @@ function getIncomePieNegetive(n) {
       for (var i = 0; i < list.length; i++) {
         var map = {};
         map["name"] = list[i].name;
-        map["value"] = list[i].value;
+        map["value"] = list[i].value.toFixed(2);
         incomeData.push(map);
         incomeName[i] = list[i].name;
       }
@@ -221,7 +221,7 @@ function getSpendingPie(n) {
       for (var i = 0; i < list.length; i++) {
         var map = {};
         map["name"] = list[i].name;
-        map["value"] = list[i].value;
+        map["value"] = list[i].value.toFixed(2);
         spendingData.push(map);
         spendingName[i] = list[i].name;
       }
