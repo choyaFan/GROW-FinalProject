@@ -30,7 +30,7 @@ public class DataInitService {
         this.worthService = worthService;
     }
 
-    @Scheduled(cron = "0 12 19 * * ?")
+    @Scheduled(cron = "0 25 11 * * ?")
     public void refreshMarketData() {
         System.out.println("Preparing market data...");
         Map<String, Double> yieldMap = new TreeMap<>();
@@ -67,7 +67,7 @@ public class DataInitService {
         try {
             response = Unirest.get("https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-financials?region=US&symbol=" + symbol)
                     .header("x-rapidapi-host", "apidojo-yahoo-finance-v1.p.rapidapi.com")
-                    .header("x-rapidapi-key", "7d74e11133msh9115d26e2930f03p1ba38fjsn5065c1dc1f0f")
+                    .header("x-rapidapi-key", "7a100b668fmshc6247907baeb4c1p11569djsn91d0316395f8")
                     .asString();
         } catch (UnirestException e) {
             e.printStackTrace();

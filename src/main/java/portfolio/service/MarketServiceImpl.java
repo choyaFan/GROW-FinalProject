@@ -122,7 +122,7 @@ public class MarketServiceImpl implements MarketService {
     @Override
     public double getHoldings() {
         double holdingYield = 0;
-        for(NetWorth netWorth : worthService.getNetWorthList()){
+        for(NetWorth netWorth : worthService.getNetWorthList()) {
             if(netWorth instanceof Investment){
                 double changeValue = (priceMap.get(netWorth.getName()) - ((Investment) netWorth).getPurchasePrice()) * ((Investment) netWorth).getShares();
                 holdingYield += changeValue / netWorth.getValue();
@@ -156,7 +156,7 @@ public class MarketServiceImpl implements MarketService {
         nameMap.put("SSE Composite Index", "000001.SS");
         CompletableFuture<HttpResponse<String>> future = Unirest.get("https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-financials?region=US&symbol=" + nameMap.get(index))
                 .header("x-rapidapi-host", "apidojo-yahoo-finance-v1.p.rapidapi.com")
-                .header("x-rapidapi-key", "7d74e11133msh9115d26e2930f03p1ba38fjsn5065c1dc1f0f")
+                .header("x-rapidapi-key", "7a100b668fmshc6247907baeb4c1p11569djsn91d0316395f8")
                 .asStringAsync(response -> {
                     JSONObject jsonObject = JSON.parseObject(response.getBody());
                     JSONObject price = jsonObject.getJSONObject("price");
