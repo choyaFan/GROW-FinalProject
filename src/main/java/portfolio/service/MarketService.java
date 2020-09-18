@@ -6,5 +6,5 @@ public interface MarketService {
     String getGainers();
     String getLosers();
     double getHoldings();
-    void initData();
+    void updateData();
 }

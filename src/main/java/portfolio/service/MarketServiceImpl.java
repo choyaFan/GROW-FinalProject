@@ -13,6 +13,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.config.Task;
 import org.springframework.stereotype.Service;
+import portfolio.dao.MarketDataDao;
+import portfolio.entity.Index;
 import portfolio.entity.Investment;
 import portfolio.entity.NetWorth;
 
@@ -22,43 +24,44 @@ import java.util.*;
 import java.util.concurrent.*;
 
 @Service
-@EnableScheduling
 public class MarketServiceImpl implements MarketService {
-    private static final Map<String, Double> DEFAULT_YIELD;
-    private static final Map<String, Double> DEFAULT_PRICE;
-    static {
-            DEFAULT_YIELD = new LinkedHashMap<>();
-            DEFAULT_YIELD.put("Cadence", 7.77);
-            DEFAULT_YIELD.put("Ares", 7.38);
-            DEFAULT_YIELD.put("Diageo plc", 7.19);
-            DEFAULT_YIELD.put("NexPoint", -0.62);
-            DEFAULT_YIELD.put("Itau", -0.59);
-            DEFAULT_YIELD.put("Silicon", -0.32);
-            DEFAULT_YIELD.put("Valley", -0.27);
-            DEFAULT_YIELD.put("Echo", -0.17);
-            DEFAULT_YIELD.put("Guggenheim", -0.16);
-            DEFAULT_YIELD.put("Vanda", -0.11);
-            DEFAULT_PRICE = new LinkedHashMap<>();
-            DEFAULT_PRICE.put("Valley", 7.2);
-            DEFAULT_PRICE.put("Ares", 40.17);
-            DEFAULT_PRICE.put("Diageo plc", 136.59);
-            DEFAULT_PRICE.put("Vanda", 9.63);
-            DEFAULT_PRICE.put("Itau", 4.68);
-            DEFAULT_PRICE.put("Silicon", 36.61);
-            DEFAULT_PRICE.put("NexPoint", 9.23);
-            DEFAULT_PRICE.put("Cadence", 105.23);
-            DEFAULT_PRICE.put("Echo", 26.75);
-            DEFAULT_PRICE.put("Guggenheim", 18.22);
-    }
+//    private static final Map<String, Double> DEFAULT_YIELD;
+//    private static final Map<String, Double> DEFAULT_PRICE;
+//    static {
+//            DEFAULT_YIELD = new LinkedHashMap<>();
+//            DEFAULT_YIELD.put("Cadence", 7.77);
+//            DEFAULT_YIELD.put("Ares", 7.38);
+//            DEFAULT_YIELD.put("Diageo plc", 7.19);
+//            DEFAULT_YIELD.put("NexPoint", -0.62);
+//            DEFAULT_YIELD.put("Itau", -0.59);
+//            DEFAULT_YIELD.put("Silicon", -0.32);
+//            DEFAULT_YIELD.put("Valley", -0.27);
+//            DEFAULT_YIELD.put("Echo", -0.17);
+//            DEFAULT_YIELD.put("Guggenheim", -0.16);
+//            DEFAULT_YIELD.put("Vanda", -0.11);
+//            DEFAULT_PRICE = new LinkedHashMap<>();
+//            DEFAULT_PRICE.put("Valley", 7.2);
+//            DEFAULT_PRICE.put("Ares", 40.17);
+//            DEFAULT_PRICE.put("Diageo plc", 136.59);
+//            DEFAULT_PRICE.put("Vanda", 9.63);
+//            DEFAULT_PRICE.put("Itau", 4.68);
+//            DEFAULT_PRICE.put("Silicon", 36.61);
+//            DEFAULT_PRICE.put("NexPoint", 9.23);
+//            DEFAULT_PRICE.put("Cadence", 105.23);
+//            DEFAULT_PRICE.put("Echo", 26.75);
+//            DEFAULT_PRICE.put("Guggenheim", 18.22);
+//    }
 
     private final NetWorthService worthService;
-    Map<String, Double> sortedYieldMap = DEFAULT_YIELD;
-    Map<String, Double> priceMap = DEFAULT_PRICE;
+    private final MarketDataDao marketDataDao;
+    Map<String, Double> sortedYieldMap = new LinkedHashMap<>();
+    Map<String, Double> priceMap = new LinkedHashMap<>();
     JSONArray indexArray = new JSONArray();
 
     @Autowired
-    public MarketServiceImpl(NetWorthService netWorthService) {
+    public MarketServiceImpl(NetWorthService netWorthService, MarketDataDao marketDataDao) {
         this.worthService = netWorthService;
+        this.marketDataDao = marketDataDao;
     }
 
     @Override
@@ -77,6 +80,7 @@ public class MarketServiceImpl implements MarketService {
             }
         }
         Unirest.shutDown();
+//        indexArray.toJavaList(Index.class);
         return JSON.toJSONString(indexArray);
     }
 
@@ -127,47 +131,19 @@ public class MarketServiceImpl implements MarketService {
         return Double.parseDouble(String.format("%.2f", holdingYield));
     }
 
-    public String getPriceBySymbol(String symbol){
-        HttpResponse<String> response = null;
-        try {
-            response = Unirest.get("https://apidojo-yahoo-finance-v1.p.rapidapi.com/stock/v2/get-financials?region=US&symbol=" + symbol)
-                    .header("x-rapidapi-host", "apidojo-yahoo-finance-v1.p.rapidapi.com")
-                    .header("x-rapidapi-key", "7d74e11133msh9115d26e2930f03p1ba38fjsn5065c1dc1f0f")
-                    .asString();
-        } catch (UnirestException e) {
-            e.printStackTrace();
-        }
-        JSONObject json = JSON.parseObject(response.getBody());
-        JSONObject price = json.getJSONObject("price");
-        return price.getJSONObject("regularMarketPrice").getString("fmt");
+    public void getPriceMap(){
+        priceMap = marketDataDao.getPriceMap();
     }
 
-    @Scheduled(cron = "0 33 9 * * ?")
+    public void getYieldMap(){
+        sortedYieldMap = marketDataDao.getYieldMap();
+    }
+
+    @PostConstruct
     @Override
-    public void initData() {
-        System.out.println("Preparing market data...");
-        Map<String, Double> yieldMap = new TreeMap<>();
-        for(NetWorth netWorth : worthService.getNetWorthList()){
-            if(netWorth instanceof Investment){
-                double purchasePrice = ((Investment) netWorth).getPurchasePrice();
-                double marketPrice = Double.parseDouble(getPriceBySymbol(((Investment) netWorth).getSymbol()));
-                double gainRate = (marketPrice - purchasePrice) / purchasePrice;
-                yieldMap.put(netWorth.getName(), Double.valueOf(String.format("%.2f", gainRate)));
-                priceMap.put(netWorth.getName(), marketPrice);
-            }
-        }
-        // sort the Yield Map
-        List<Map.Entry<String, Double>> list = new ArrayList<>(yieldMap.entrySet());
-        list.sort((o1, o2) -> {
-            if (o1.getValue() < 0 && o2.getValue() < 0){
-                return o1.getValue().compareTo(o2.getValue());
-            }
-            return o2.getValue().compareTo(o1.getValue());
-        });
-        for(Map.Entry<String, Double> map : list) {
-            sortedYieldMap.put(map.getKey(), map.getValue());
-        }
-        System.out.println("Init market data success");
+    public void updateData(){
+        getYieldMap();
+        getPriceMap();
     }
 
     @Async

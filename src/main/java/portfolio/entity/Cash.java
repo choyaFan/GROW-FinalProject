@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 
 @Document(collection = "cash")
-public class Cash extends NetWorth{
+public class Cash extends NetWorth {
 
     public Cash(String ID, String name, String type, double value, Date created) {
         this.ID = ID;
